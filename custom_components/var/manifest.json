@@ -1,0 +1,10 @@
+{
+  "domain": "var",
+  "name": "Variable",
+  "documentation": "",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": [
+    "@snarky-snark"
+  ]
+}

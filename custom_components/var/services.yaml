@@ -1,0 +1,31 @@
+set:
+  description: Set attributes of a variable entity.
+  fields:
+    entity_id:
+      description: Entity id of the variable whose value will be set.
+      example: var.x
+    value:
+      description: The new value for the variable entity.
+      example: 13
+    value_template:
+      description: The new value template for the variable entity. 
+      example: "{{ input_boolean.foo }}"
+    tracked_entity_id:
+      description: The new list of entities for the variable entity to track. 
+      example: input_boolean.bar
+    restore:
+      description: The new restore value for the variable entity. 
+      example: false
+    unit_of_measurement:
+      description: The new unit of measurement for the variable entity. 
+      example: 'ounces'
+    icon:
+      description: The new icon for the variable entity. 
+      example: 'mdi:baby-bottle-outline'
+    icon_template:
+      description: The new icon template for the variable entity. 
+    entity_picture:
+      description: The new picture for the variable entity. 
+      example:  'local/pic.png'
+    entity_picture_template:
+      description: The new picture template for the variable entity. 
