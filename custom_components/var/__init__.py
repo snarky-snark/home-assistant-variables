@@ -267,24 +267,24 @@ class Variable(RestoreEntity):
             entity_picture_template=None,
             manual_tracked_entity_ids=None):
         """Set new attributes for the variable."""
-        if value:
+        if value is not None:
             self._value = value
-        if unit:
+        if unit is not None:
             self._unit = unit
-        if restore:
+        if restore is not None:
             self._restore = restore
-        if friendly_name:
+        if friendly_name is not None:
             self._friendly_name = friendly_name
-        if icon:
+        if icon is not None:
             self._icon = icon
-        if entity_picture:
+        if entity_picture is not None:
             self._entity_picture = entity_picture
         for property_name, template in self._templates_dict.items():
             if template is not None:
                 setattr(self, property_name, template.async_render())
 
         tracked_entity_ids = None
-        if manual_tracked_entity_ids:
+        if manual_tracked_entity_ids is not None:
             tracked_entity_ids = manual_tracked_entity_ids
         elif any(t is not None for t in self._templates_dict.values()):
             template_entity_ids = parse_template_entity_ids(
