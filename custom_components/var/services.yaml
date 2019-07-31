@@ -13,6 +13,15 @@ set:
     tracked_entity_id:
       description: The new list of entities for the variable entity to track. 
       example: input_boolean.bar
+    tracked_event_type:
+      description: The new list of event types for the variable entity to track. 
+      example: sunset
+    query:
+      description: An SQL QUERY string, should return 1 result at most.
+      example: "SELECT COUNT(*) AS todays_diaper_count FROM events WHERE event_type = 'diaper_event' AND time_fired BETWEEN DATETIME('now', 'start of day') and DATETIME('now');"
+    column:
+      description: The SQL COLUMN to select from the result of the SQL QUERY.
+      example: 'todays_diaper_count'
     restore:
       description: The new restore value for the variable entity. 
       example: false

@@ -12,11 +12,14 @@ from homeassistant.const import (
     CONF_ICON, CONF_ICON_TEMPLATE, ATTR_ENTITY_PICTURE,
     CONF_ENTITY_PICTURE_TEMPLATE, ATTR_ENTITY_ID,
     EVENT_HOMEASSISTANT_START, CONF_FRIENDLY_NAME_TEMPLATE, MATCH_ALL)
+from homeassistant.components.recorder import (
+    CONF_DB_URL, DEFAULT_URL, DEFAULT_DB_FILE)
 from homeassistant.exceptions import TemplateError
 from homeassistant.helpers.entity import async_generate_entity_id
 from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.event import async_track_state_change
+from homeassistant.components import recorder
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,14 +28,25 @@ ENTITY_ID_FORMAT = DOMAIN + '.{}'
 
 CONF_INITIAL_VALUE = "initial_value"
 CONF_RESTORE = "restore"
+CONF_QUERY = 'query'
+CONF_COLUMN = 'column'
+CONF_TRACKED_ENTITY_ID = 'tracked_entity_id'
+CONF_TRACKED_EVENT_TYPE = 'tracked_event_type'
 
 ATTR_VALUE = 'value'
-ATTR_TRACKED_ENTITY_ID = 'tracked_entity_id'
+
+def validate_sql_select(value):
+    """Validate that value is a SQL SELECT query."""
+    if not value.lstrip().lower().startswith('select'):
+        raise vol.Invalid('Only SELECT queries allowed')
+    return value
 
 SERVICE_SET = "set"
 SERVICE_SET_SCHEMA = ENTITY_SERVICE_SCHEMA.extend({
         vol.Optional(ATTR_VALUE): cv.match_all,
         vol.Optional(CONF_VALUE_TEMPLATE): cv.template,
+        vol.Optional(CONF_QUERY): vol.All(cv.string, validate_sql_select),
+        vol.Optional(CONF_COLUMN): cv.string,
         vol.Optional(ATTR_UNIT_OF_MEASUREMENT): cv.string,
         vol.Optional(CONF_RESTORE): cv.boolean,
         vol.Optional(ATTR_FRIENDLY_NAME): cv.string,
@@ -41,7 +55,8 @@ SERVICE_SET_SCHEMA = ENTITY_SERVICE_SCHEMA.extend({
         vol.Optional(CONF_ICON_TEMPLATE): cv.template,
         vol.Optional(ATTR_ENTITY_PICTURE): cv.string,
         vol.Optional(CONF_ENTITY_PICTURE_TEMPLATE): cv.template,
-        vol.Optional(ATTR_TRACKED_ENTITY_ID): cv.entity_ids,
+        vol.Optional(CONF_TRACKED_ENTITY_ID): cv.entity_ids,
+        vol.Optional(CONF_TRACKED_EVENT_TYPE): [cv.string],
 })
 
 CONFIG_SCHEMA = vol.Schema({
@@ -49,6 +64,9 @@ CONFIG_SCHEMA = vol.Schema({
         cv.slug: vol.Any({
             vol.Optional(CONF_INITIAL_VALUE): cv.match_all,
             vol.Optional(CONF_VALUE_TEMPLATE): cv.template,
+            vol.Optional(CONF_QUERY): vol.All(cv.string, validate_sql_select),
+            vol.Optional(CONF_COLUMN): cv.string,
+            vol.Optional(CONF_DB_URL): cv.string,
             vol.Optional(ATTR_UNIT_OF_MEASUREMENT): cv.string,
             vol.Optional(CONF_RESTORE): cv.boolean,
             vol.Optional(ATTR_FRIENDLY_NAME): cv.string,
@@ -57,12 +75,13 @@ CONFIG_SCHEMA = vol.Schema({
             vol.Optional(CONF_ICON_TEMPLATE): cv.template,
             vol.Optional(ATTR_ENTITY_PICTURE): cv.string,
             vol.Optional(CONF_ENTITY_PICTURE_TEMPLATE): cv.template,
-            vol.Optional(ATTR_TRACKED_ENTITY_ID): cv.entity_ids,
+            vol.Optional(CONF_TRACKED_ENTITY_ID): cv.entity_ids,
+            vol.Optional(CONF_TRACKED_EVENT_TYPE): [cv.string],
         }, None)
     })
 }, extra=vol.ALLOW_EXTRA)
 
-def parse_template_entity_ids(hass, object_id, value_template,
+def parse_template_entity_ids(object_id, value_template,
                               icon_template, entity_picture_template,
                               friendly_name_template):
     """Parse entity_ids from templates."""
@@ -77,7 +96,6 @@ def parse_template_entity_ids(hass, object_id, value_template,
     ):
         if template is None:
             continue
-        template.hass = hass
 
         template_entity_ids = template.extract_entities()
         if template_entity_ids == MATCH_ALL:
@@ -98,6 +116,10 @@ def parse_template_entity_ids(hass, object_id, value_template,
         entity_ids = list(entity_ids)
 
     return entity_ids
+
+def set_template_hass(template, hass):
+    if template is not None:
+        template.hass = hass
 
 async def async_setup(hass, config):
     """Set up variables from config."""
@@ -121,18 +143,50 @@ async def async_setup(hass, config):
         friendly_name_template = cfg.get(CONF_FRIENDLY_NAME_TEMPLATE)
         icon_template = cfg.get(CONF_ICON_TEMPLATE)
         entity_picture_template = cfg.get(CONF_ENTITY_PICTURE_TEMPLATE)
+        for template in (value_template,
+           icon_template,
+           entity_picture_template,
+           friendly_name_template,
+        ):
+            set_template_hass(template, hass)
 
-        manual_entity_ids = cfg.get(ATTR_ENTITY_ID)
-        
+        manual_entity_ids = cfg.get(CONF_TRACKED_ENTITY_ID)
+
         tracked_entity_ids = list()
         if manual_entity_ids is not None:
             tracked_entity_ids = list(set(manual_entity_ids))
         else:
             template_entity_ids = parse_template_entity_ids(
-                hass, object_id, value_template, icon_template,
+                object_id, value_template, icon_template,
                 entity_picture_template, friendly_name_template)
             if template_entity_ids is not None:
                 tracked_entity_ids = template_entity_ids
+
+        tracked_event_types = cfg.get(CONF_TRACKED_EVENT_TYPE)
+        if tracked_event_types is not None:
+            tracked_event_types = list(set(tracked_event_types))
+
+        query = cfg.get(CONF_QUERY)
+        column = cfg.get(CONF_COLUMN)
+        db_url = config.get(CONF_DB_URL)
+        if db_url is None:
+            db_url = DEFAULT_URL.format(
+                hass_config_path=hass.config.path(DEFAULT_DB_FILE))
+
+        import sqlalchemy
+        from sqlalchemy.orm import sessionmaker, scoped_session
+
+        try:
+            engine = sqlalchemy.create_engine(db_url)
+            sessionmaker = scoped_session(sessionmaker(bind=engine))
+
+            # Run a dummy query just to test the db_url
+            sess = sessionmaker()
+            sess.execute("SELECT 1;")
+
+        except sqlalchemy.exc.SQLAlchemyError as err:
+            _LOGGER.error("Couldn't connect using %s DB_URL: %s", db_url, err)
+            return
 
         entities.append(
             Variable(
@@ -140,6 +194,9 @@ async def async_setup(hass, config):
                 object_id,
                 initial_value,
                 value_template,
+                sessionmaker,
+                query,
+                column,
                 unit,
                 restore,
                 friendly_name,
@@ -148,7 +205,8 @@ async def async_setup(hass, config):
                 icon_template,
                 entity_picture,
                 entity_picture_template,
-                tracked_entity_ids)
+                tracked_entity_ids,
+                tracked_event_types)
             )
 
     if not entities:
@@ -165,16 +223,23 @@ async def async_setup(hass, config):
 class Variable(RestoreEntity):
     """Representation of a variable."""
 
-    def __init__(self, hass, object_id, initial_value, value_template, unit,
-                 restore, friendly_name, friendly_name_template, icon,
+    def __init__(self, hass, object_id, initial_value, value_template,
+                 sessionmaker, query, column, unit, restore,
+                 friendly_name, friendly_name_template, icon,
                  icon_template, entity_picture, entity_picture_template,
-                 tracked_entity_ids):
+                 tracked_entity_ids, tracked_event_types):
         """Initialize a variable."""
         self.hass = hass
         self.entity_id = ENTITY_ID_FORMAT.format(object_id)
         self._value = initial_value
         self._initial_value = initial_value
         self._value_template = value_template
+        self._sessionmaker = sessionmaker
+        if query is not None and not 'LIMIT' in query:
+            self._query = query.replace(";", " LIMIT 1;")
+        else:
+            self._query = query
+        self._column = column
         self._unit = unit
         self._restore = restore
         self._friendly_name = friendly_name
@@ -185,31 +250,47 @@ class Variable(RestoreEntity):
         self._entity_picture_template = entity_picture_template
         self._tracked_entity_ids = tracked_entity_ids
         self._stop_track_state_change = None
+        self._tracked_event_types = tracked_event_types
+        self._stop_track_events = []
 
-    def _get_variable_template_state_listener(self):
+    async def _get_variable_state_change_listener(self):
         @callback
-        def listener(entity, old_state, new_state):
-            """Handle device state changes."""
+        async def listener(entity, old_state, new_state):
+            """Update variable when monitored entity's state changes."""
             self.async_schedule_update_ha_state(True)
+        return listener
+
+    async def _get_variable_event_listener(self):
+        @callback
+        async def listener(event):
+            """Update variable once monitored event fires and is recorded to the database."""
+            self.async_schedule_update_ha_state(True)
+            await self.hass.async_block_till_done()
+            await self.hass.async_add_job(self.hass.data[recorder.DATA_INSTANCE].block_till_done)
         return listener
 
     async def async_added_to_hass(self):
         """Register callbacks."""
 
         @callback
-        def variable_template_startup(event):
-            """Update template on startup."""
-            if self._tracked_entity_ids:
+        def variable_startup(event):
+            """Update variable event listeners on startup."""
+            if self._tracked_entity_ids is not None:
                 # Track state changes for specified entities
-                listener = self._get_variable_template_state_listener()
+                listener = self._get_variable_state_change_listener()
                 self._stop_track_state_change = async_track_state_change(
                     self.hass, self._tracked_entity_ids, listener)
+            if self._tracked_event_types is not None:
+                listener = self._get_variable_event_listener()
+                for event_type in self._tracked_event_types:
+                    stop = self.hass.bus.async_listen(event_type, listener)
+                    self._stop_track_events.append(stop)
 
             self.async_schedule_update_ha_state(True)
 
         self.hass.bus.async_listen_once(
-            EVENT_HOMEASSISTANT_START, variable_template_startup)
-        
+            EVENT_HOMEASSISTANT_START, variable_startup)
+
         # Restore previous value on startup
         await super().async_added_to_hass()
         if self._restore == True:
@@ -257,6 +338,8 @@ class Variable(RestoreEntity):
     async def async_set(self,
             value=None,
             value_template=None,
+            query=None,
+            column=None,
             unit=None,
             restore=None,
             friendly_name=None,
@@ -265,7 +348,8 @@ class Variable(RestoreEntity):
             icon_template=None,
             entity_picture=None,
             entity_picture_template=None,
-            manual_tracked_entity_ids=None):
+            manual_tracked_entity_ids=None,
+            tracked_event_types=None):
         """Set new attributes for the variable."""
         if value is not None:
             self._value = value
@@ -282,13 +366,18 @@ class Variable(RestoreEntity):
         for property_name, template in self._templates_dict.items():
             if template is not None:
                 setattr(self, property_name, template.async_render())
+                set_template_hass(template, self.hass)
+        if query is not None:
+          self._query = query
+        if column is not None:
+          self._column = column
 
         tracked_entity_ids = None
         if manual_tracked_entity_ids is not None:
             tracked_entity_ids = manual_tracked_entity_ids
         elif any(t is not None for t in self._templates_dict.values()):
             template_entity_ids = parse_template_entity_ids(
-                hass, object_id, *self._templates_dict.values())
+                object_id, *self._templates_dict.values())
             if template_entity_ids is not None:
                 tracked_entity_ids = template_entity_ids
 
@@ -296,20 +385,62 @@ class Variable(RestoreEntity):
             if self._stop_track_state_change:
                 self._stop_track_state_change()
             self._tracked_entity_ids = tracked_entity_ids
-            listener = self._get_variable_template_state_listener()
+            listener = self._get_variable_state_change_listener()
             self._stop_track_state_change = async_track_state_change(
                 self.hass, self._tracked_entity_ids, listener)
+
+        if tracked_event_types is not None:
+            if self._stop_track_events:
+                for stop in self._stop_track_events:
+                  stop()
+            self._tracked_event_types = tracked_event_types
+            listener = self._get_variable_event_listener()
+            for event_type in self._tracked_event_types:
+                stop = self.hass.bus.async_listen(event_type, listener)
+                self._stop_track_events.append(stop)
 
         await self.async_update_ha_state()
 
     async def async_update(self):
-        """Update the state from the template."""
+        """Update the state and attributes from the templates."""
+        db_value = None
+        if self._query is not None:
+            import sqlalchemy
+            try:
+                sess = self._sessionmaker()
+                result = sess.execute(self._query)
+
+                if not result.returns_rows or result.rowcount == 0:
+                    _LOGGER.warning("%s returned no results", self._query)
+                    self._state = None
+                    return
+
+                for res in result:
+                    _LOGGER.debug("result = %s", res.items())
+                    db_value = res[self._column]
+            except sqlalchemy.exc.SQLAlchemyError as err:
+                _LOGGER.error("Error executing query %s: %s", self._query, err)
+                return
+            finally:
+                sess.close()
+
         for property_name, template in self._templates_dict.items():
-            if template is None:
+            if property_name != '_value' and template is None:
                 continue
 
             try:
-                setattr(self, property_name, template.async_render())
+                rendered_template = None
+                if template is not None:
+                    if db_value is not None:
+                        rendered_template = template.async_render_with_possible_json_value(db_value, None)
+                    else:
+                        rendered_template = template.async_render()
+
+                # Use db value if no value template is provided
+                if property_name == '_value' and template is None and db_value is not None:
+                    setattr(self, property_name, db_value)
+                else:
+                    setattr(self, property_name, rendered_template)
             except TemplateError as ex:
                 friendly_property_name = property_name[1:].replace('_', ' ')
                 if ex.args and ex.args[0].startswith(

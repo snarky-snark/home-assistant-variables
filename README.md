@@ -40,7 +40,19 @@ var:
   Defines a template for the value (this overrides `initial_value`).
 * **tracked_entity_id**
   *(string | list)(Optional)*
-  A list of entity IDs so the variable only reacts to state changes of these entities. This can be used if the automatic analysis fails to find all relevant entities.
+  A list of entity IDs so the variable reacts to state changes of these entities. This can be used if the automatic analysis fails to find all relevant entities to monitor in the templates.
+* **tracked_event_type**
+  *(string | list)(Optional)*
+  A list of event types so the variable reacts to these events firing.
+* **db_url**
+  *(string)(Optional)*
+  The URL which points to your database. See [supported engines](https://www.home-assistant.io/components/recorder/#custom-database-engines).
+* **query**
+  *(string)(Optional)*
+  An SQL QUERY string, should return 1 result at most.
+* **column**
+  *(string)(Optional)*
+  The SQL COLUMN to select from the result of the SQL QUERY.
 * **restore**
   *(boolean)(Optional)*
   Restores the value of the variable whenever Home Assistant is restarted.
@@ -69,7 +81,7 @@ var:
 ## Services
 
 ### `set`
-The `set` service can be used to update any of the attributes of the variable entity from an automation or a script.
+The `set` service can be used to update any of the attributes of the variable entity from an automation or a script (with the exception of `db_url`).
 
 ```yaml
 var:
@@ -105,9 +117,10 @@ automation:
 
 ## Templates
 
-The `var` component is modeled after the template sensor component,
-and many of the same features are supported. In fact, a variable is basically a
-template sensor with a service to set its state directly.
+The `var` component is modeled after the template sensor and SQL sensor components,
+and many of the same features of these components are supported by the variable
+component. In fact, a variable is basically a template sensor and an SQL sensor
+with a service to set its state and attributes directly.
 
 ### SELECTING ENTITY/VALUE USING TEMPLATES
 Templates can be used with the variable `set` service to select the `entity_id` and to set any of the attributes of a variable entity. This example shows `entity_id` and `value` being selected via template.
@@ -157,6 +170,21 @@ var:
       - var.waldo_location_status
 ```
 
+### DYNAMIC VARIABLE UPDATES USING AN SQL QUERY
+This example shows how the value, and other attributes of the variable, can be set to update automatically based on an SQL query. Template values will be updated whenever the state changes for any of the tracked entities listed below `tracked_entity_id` or when any event fires with the same event type
+as any of the event types listed below `tracked_event_type`.
+```yaml
+var:
+	todays_diaper_count:
+		friendly_name: "Today's Diaper Count"
+		unit_of_measurement: ' '
+		query: "select count(*) as diaper_count from events where event_type = 'diaper_event' and time_fired between datetime('now', 'start of day') and datetime('now');"
+		column: 'diaper_count'
+		icon: mdi:toilet
+    tracked_event_type:
+      - diaper_event
+```
+
 ## Lovelace UI
 
 Variables can be displayed in the Lovelace frontend like other entities. 
@@ -184,7 +212,12 @@ cards:
 ```
 
 Tip: Using a unit of `' '` can be useful if you want to group unit-less variables
-together in a single 2D graph. 
+together in a single 2D graph.
+
+## Related Documentation
+
+* [Template Sensor](https://www.home-assistant.io/components/template/)
+* [SQL Sensor](https://www.home-assistant.io/components/sql/)
 
 ## Why?
 
