@@ -18,7 +18,7 @@ var:
     icon: mdi:bug
   y:
     friendly_name: 'Y'
-    initial_value: 'Sleeping' 
+    initial_value: 'Sleeping'
     entity_picture: '/local/sleep.png'
 ```
 
@@ -44,13 +44,13 @@ var:
 * **restore**
   *(boolean)(Optional)*
   Restores the value of the variable whenever Home Assistant is restarted.
-  
+
   Default value:
   true
 * **unit_of_measurement**
   *(string)(Optional)*
   Defines the units of measurement of the variable, if any. This will also influence the graphical presentation in the history visualization as a continuous value. Variables with missing `unit_of_measurement` are showing as discrete values.
-  
+
   Default value:
   None
 * **icon**
@@ -134,7 +134,7 @@ automation:
           {% endif %}
 ```
 ### DYNAMIC VARIABLE UPDATES USING TEMPLATES
-This example shows how the value, and other attributes of the variable, can be set to update automatically based on the state of another entity. Template values will be updated whenever the state changes for any of the tracked entities listed below `tracked_entity_id`. 
+This example shows how the value, and other attributes of the variable, can be set to update automatically based on the state of another entity. Template values will be updated whenever the state changes for any of the tracked entities listed below `tracked_entity_id`.
 ```yaml
 var:
   waldo_location_status:
@@ -159,7 +159,7 @@ var:
 
 ## Lovelace UI
 
-Variables can be displayed in the Lovelace frontend like other entities. 
+Variables can be displayed in the Lovelace frontend like other entities.
 
 ```yaml
 cards:
@@ -184,7 +184,7 @@ cards:
 ```
 
 Tip: Using a unit of `' '` can be useful if you want to group unit-less variables
-together in a single 2D graph. 
+together in a single 2D graph.
 
 ## Why?
 
@@ -192,4 +192,12 @@ I assembled this component for a few reasons:
 * It was tedious to create a corresponding separate template sensor for each entity in the UI.
 * I wanted a single general-purpose component, with a generic name, that could be used to store, update, and display values using templates.
 * I didn't like using named UI components to store first-class data (e.g. `input_text`).
+* I wanted to be able to work with data directly from the home assistant database (especially custom events) without having to create and flip-flop between a bunch of different entities.
 * I wanted a custom component that I could extend with more features in the future.
+
+## Useful Links
+
+* [Template Sensor Documentation](https://www.home-assistant.io/components/template/)
+* [SQL Sensor Documentation](https://www.home-assistant.io/components/sql/)
+* [BuyMeACoffee?](https://www.buymeacoffee.com/snarkysnark) :persevere:
+
