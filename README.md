@@ -175,12 +175,12 @@ This example shows how the value, and other attributes of the variable, can be s
 as any of the event types listed below `tracked_event_type`.
 ```yaml
 var:
-	todays_diaper_count:
-		friendly_name: "Today's Diaper Count"
-		unit_of_measurement: ' '
-		query: "select count(*) as diaper_count from events where event_type = 'diaper_event' and time_fired between datetime('now', 'start of day') and datetime('now');"
-		column: 'diaper_count'
-		icon: mdi:toilet
+  todays_diaper_count:
+    friendly_name: "Today's Diaper Count"
+    unit_of_measurement: ' '
+    query: "select count(*) as diaper_count from events where event_type = 'diaper_event' and time_fired between datetime('now', 'start of day') and datetime('now');"
+    column: 'diaper_count'
+    icon: mdi:toilet
     tracked_event_type:
       - diaper_event
 ```
