@@ -4,7 +4,16 @@ A custom Home Assistant component for declaring and setting generic variable ent
 
 ## Installation
 
-Copy the `var` directory into the `custom_components` directory of your Home Assistant installation.
+### MANUAL INSTALLATION
+1. Copy the `var` directory into the `custom_components` directory of your Home Assistant installation.
+2. Add a `var` entry to your `configuration.yaml`.
+3. Restart Home Assistant.
+
+### INSTALLATION VIA HACS
+1. Ensure that [HACS](https://custom-components.github.io/hacs/) is installed.
+2. Search for and install the "Variable" integration.
+3. Add a `var` entry to your `configuration.yaml`.
+4. Restart Home Assistant.
 
 ## Configuration
 
