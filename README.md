@@ -44,9 +44,6 @@ var:
 * **tracked_event_type**
   *(string | list)(Optional)*
   A list of event types so the variable reacts to these events firing.
-* **db_url**
-  *(string)(Optional)*
-  The URL which points to your database. See [supported engines](https://www.home-assistant.io/components/recorder/#custom-database-engines).
 * **query**
   *(string)(Optional)*
   An SQL QUERY string, should return 1 result at most.
@@ -81,7 +78,7 @@ var:
 ## Services
 
 ### `set`
-The `set` service can be used to update any of the attributes of the variable entity from an automation or a script (with the exception of `db_url`).
+The `set` service can be used to update any of the attributes of the variable entity from an automation or a script.
 
 ```yaml
 var:

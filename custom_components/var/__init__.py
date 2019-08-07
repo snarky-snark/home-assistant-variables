@@ -15,8 +15,6 @@ from homeassistant.const import (
     CONF_ENTITY_PICTURE_TEMPLATE, ATTR_ENTITY_ID,
     EVENT_HOMEASSISTANT_START, CONF_FRIENDLY_NAME_TEMPLATE, MATCH_ALL,
     EVENT_STATE_CHANGED)
-from homeassistant.components.recorder import (
-    CONF_DB_URL, DEFAULT_URL, DEFAULT_DB_FILE)
 from homeassistant.exceptions import TemplateError
 from homeassistant.helpers.entity import async_generate_entity_id
 from homeassistant.helpers.entity_component import EntityComponent
@@ -71,7 +69,6 @@ CONFIG_SCHEMA = vol.Schema({
             vol.Optional(CONF_VALUE_TEMPLATE): cv.template,
             vol.Optional(CONF_QUERY): vol.All(cv.string, validate_sql_select),
             vol.Optional(CONF_COLUMN): cv.string,
-            vol.Optional(CONF_DB_URL): cv.string,
             vol.Optional(ATTR_UNIT_OF_MEASUREMENT): cv.string,
             vol.Optional(CONF_RESTORE): cv.boolean,
             vol.Optional(ATTR_FRIENDLY_NAME): cv.string,
@@ -173,10 +170,6 @@ async def async_setup(hass, config):
 
         query = cfg.get(CONF_QUERY)
         column = cfg.get(CONF_COLUMN)
-        db_url = config.get(CONF_DB_URL)
-        if db_url is None:
-            db_url = DEFAULT_URL.format(
-                hass_config_path=hass.config.path(DEFAULT_DB_FILE))
 
         session = hass.data[recorder.DATA_INSTANCE].get_session()
 
