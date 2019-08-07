@@ -1,10 +1,8 @@
 {
   "domain": "var",
   "name": "Variable",
-  "documentation": "",
-  "requirements": [],
-  "dependencies": [],
-  "codeowners": [
-    "@snarky-snark"
-  ]
+  "documentation": "https://github.com/snarky-snark/home-assistant-variables/blob/master/README.md",
+  "dependencies": ["recorder"],
+  "codeowners": ["@snarky-snark"],
+  "requirements": []
 }

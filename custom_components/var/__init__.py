@@ -3,6 +3,8 @@
 import logging
 
 import voluptuous as vol
+import asyncio
+import json
 
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
@@ -11,7 +13,8 @@ from homeassistant.const import (
     ATTR_FRIENDLY_NAME, ATTR_UNIT_OF_MEASUREMENT, CONF_VALUE_TEMPLATE,
     CONF_ICON, CONF_ICON_TEMPLATE, ATTR_ENTITY_PICTURE,
     CONF_ENTITY_PICTURE_TEMPLATE, ATTR_ENTITY_ID,
-    EVENT_HOMEASSISTANT_START, CONF_FRIENDLY_NAME_TEMPLATE, MATCH_ALL)
+    EVENT_HOMEASSISTANT_START, CONF_FRIENDLY_NAME_TEMPLATE, MATCH_ALL,
+    EVENT_STATE_CHANGED)
 from homeassistant.components.recorder import (
     CONF_DB_URL, DEFAULT_URL, DEFAULT_DB_FILE)
 from homeassistant.exceptions import TemplateError
@@ -19,7 +22,9 @@ from homeassistant.helpers.entity import async_generate_entity_id
 from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.event import async_track_state_change
+from homeassistant.helpers.json import JSONEncoder
 from homeassistant.components import recorder
+from homeassistant.components.recorder.models import Events
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -173,20 +178,7 @@ async def async_setup(hass, config):
             db_url = DEFAULT_URL.format(
                 hass_config_path=hass.config.path(DEFAULT_DB_FILE))
 
-        import sqlalchemy
-        from sqlalchemy.orm import sessionmaker, scoped_session
-
-        try:
-            engine = sqlalchemy.create_engine(db_url)
-            sessionmaker = scoped_session(sessionmaker(bind=engine))
-
-            # Run a dummy query just to test the db_url
-            sess = sessionmaker()
-            sess.execute("SELECT 1;")
-
-        except sqlalchemy.exc.SQLAlchemyError as err:
-            _LOGGER.error("Couldn't connect using %s DB_URL: %s", db_url, err)
-            return
+        session = hass.data[recorder.DATA_INSTANCE].get_session()
 
         entities.append(
             Variable(
@@ -194,7 +186,7 @@ async def async_setup(hass, config):
                 object_id,
                 initial_value,
                 value_template,
-                sessionmaker,
+                session,
                 query,
                 column,
                 unit,
@@ -224,7 +216,7 @@ class Variable(RestoreEntity):
     """Representation of a variable."""
 
     def __init__(self, hass, object_id, initial_value, value_template,
-                 sessionmaker, query, column, unit, restore,
+                 session, query, column, unit, restore,
                  friendly_name, friendly_name_template, icon,
                  icon_template, entity_picture, entity_picture_template,
                  tracked_entity_ids, tracked_event_types):
@@ -234,7 +226,7 @@ class Variable(RestoreEntity):
         self._value = initial_value
         self._initial_value = initial_value
         self._value_template = value_template
-        self._sessionmaker = sessionmaker
+        self._session = session
         if query is not None and not 'LIMIT' in query:
             self._query = query.replace(";", " LIMIT 1;")
         else:
@@ -253,20 +245,31 @@ class Variable(RestoreEntity):
         self._tracked_event_types = tracked_event_types
         self._stop_track_events = []
 
-    async def _get_variable_state_change_listener(self):
-        @callback
-        async def listener(entity, old_state, new_state):
-            """Update variable when monitored entity's state changes."""
-            self.async_schedule_update_ha_state(True)
-        return listener
+    def _is_event_in_db(self, event):
+        """Query the database to see if the event has been written."""
+        event_id = self._session.query(Events.event_id).filter_by(
+            event_type=event.event_type, time_fired=event.time_fired,
+            event_data=json.dumps(event.data, cls=JSONEncoder)).scalar()
+        return event_id is not None
 
-    async def _get_variable_event_listener(self):
+    def _get_variable_event_listener(self):
         @callback
-        async def listener(event):
+        def listener(event):
             """Update variable once monitored event fires and is recorded to the database."""
-            self.async_schedule_update_ha_state(True)
-            await self.hass.async_block_till_done()
-            await self.hass.async_add_job(self.hass.data[recorder.DATA_INSTANCE].block_till_done)
+            if (event.event_type == EVENT_STATE_CHANGED and
+               self._tracked_entity_ids is not None and
+               event.data['entity_id'] not in self._tracked_entity_ids):
+                return
+
+            async def update_var():
+                """Poll the database until the event shows up."""
+                _LOGGER.debug("Waiting for event to be written: %s", event)
+                while not self._is_event_in_db(event):
+                    await asyncio.sleep(1)
+                _LOGGER.debug("Event was written: %s", event)
+                self.async_schedule_update_ha_state(True)
+
+            self.hass.add_job(update_var)
         return listener
 
     async def async_added_to_hass(self):
@@ -276,10 +279,9 @@ class Variable(RestoreEntity):
         def variable_startup(event):
             """Update variable event listeners on startup."""
             if self._tracked_entity_ids is not None:
-                # Track state changes for specified entities
-                listener = self._get_variable_state_change_listener()
-                self._stop_track_state_change = async_track_state_change(
-                    self.hass, self._tracked_entity_ids, listener)
+                listener = self._get_variable_event_listener()
+                stop = self.hass.bus.async_listen(EVENT_STATE_CHANGED, listener)
+                self._stop_track_state_change = stop
             if self._tracked_event_types is not None:
                 listener = self._get_variable_event_listener()
                 for event_type in self._tracked_event_types:
@@ -385,9 +387,9 @@ class Variable(RestoreEntity):
             if self._stop_track_state_change:
                 self._stop_track_state_change()
             self._tracked_entity_ids = tracked_entity_ids
-            listener = self._get_variable_state_change_listener()
-            self._stop_track_state_change = async_track_state_change(
-                self.hass, self._tracked_entity_ids, listener)
+            listener = self._get_variable_event_listener()
+            stop = self.hass.bus.async_listen(EVENT_STATE_CHANGED, listener)
+            self._stop_track_state_change = stop
 
         if tracked_event_types is not None:
             if self._stop_track_events:
@@ -403,12 +405,12 @@ class Variable(RestoreEntity):
 
     async def async_update(self):
         """Update the state and attributes from the templates."""
+
         db_value = None
         if self._query is not None:
             import sqlalchemy
             try:
-                sess = self._sessionmaker()
-                result = sess.execute(self._query)
+                result = self._session.execute(self._query)
 
                 if not result.returns_rows or result.rowcount == 0:
                     _LOGGER.warning("%s returned no results", self._query)
@@ -422,7 +424,7 @@ class Variable(RestoreEntity):
                 _LOGGER.error("Error executing query %s: %s", self._query, err)
                 return
             finally:
-                sess.close()
+                self._session.close()
 
         for property_name, template in self._templates_dict.items():
             if property_name != '_value' and template is None:
