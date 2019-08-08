@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.2.1] - 2019-08-08
+### Added
+- README now contains instructions for installing via HACS.
+- README now contains a link to the latest release on GitHub.
+### Changed
+- Variables only poll the database if a query has been specified.
+### Fixed
+- CHANGELOG version links now point to correct git repository.
+- CHANGELOG typos.
+- Values are no longer erased when the `var.set` service is called. This
+  bug was introduced in 0.2.0. 
+
 ## [0.2.0] - 2019-08-07
 ### Added
 - Variables can be backed by SQL queries.
@@ -13,7 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - This CHANGELOG file.
 ### Changed
 - Variable updates are now triggered after a database poll confirms that
-  tracked events and state changes have been recorded in the databse.
+  tracked events and state changes have been recorded in the database.
   Before, variables updated immediately after a state change event
   fired.
 - `var` integration now depends on `recorder`.
@@ -26,6 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Variable updates occur when the state of any tracked entity changes.
 - README with initial documentation.
 
-[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.2.0...develop
+[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.2.1...develop
+[0.2.1]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/snarky-snark/home-assistant-variables/releases/tag/v0.1.0
