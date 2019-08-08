@@ -404,6 +404,7 @@ class Variable(RestoreEntity):
     async def async_update(self):
         """Update the state and attributes from the templates."""
 
+        # Run the db query
         db_value = None
         if self._query is not None:
             import sqlalchemy
@@ -424,8 +425,11 @@ class Variable(RestoreEntity):
             finally:
                 self._session.close()
 
+        # Update the state and attributes from their templates
         for property_name, template in self._templates_dict.items():
             if property_name != '_value' and template is None:
+                continue
+            elif property_name == '_value' and template is None and db_value is None:
                 continue
 
             try:
@@ -436,11 +440,10 @@ class Variable(RestoreEntity):
                     else:
                         rendered_template = template.async_render()
 
-                # Use db value if no value template is provided
-                if property_name == '_value' and template is None and db_value is not None:
-                    setattr(self, property_name, db_value)
-                else:
+                if rendered_template is not None:
                     setattr(self, property_name, rendered_template)
+                elif property_name == '_value' and db_value is not None:
+                    setattr(self, property_name, db_value)
             except TemplateError as ex:
                 friendly_property_name = property_name[1:].replace('_', ' ')
                 if ex.args and ex.args[0].startswith(
