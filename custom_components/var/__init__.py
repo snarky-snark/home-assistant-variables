@@ -249,17 +249,22 @@ class Variable(RestoreEntity):
         @callback
         def listener(event):
             """Update variable once monitored event fires and is recorded to the database."""
+            # Skip untracked state changes
             if (event.event_type == EVENT_STATE_CHANGED and
                self._tracked_entity_ids is not None and
                event.data['entity_id'] not in self._tracked_entity_ids):
                 return
 
+            # Schedule update immediately if there is no query
+            if self._query is None:
+                self.async_schedule_update_ha_state(True)
+                return
+
+            # Otherwise poll the database scheduling update once event has been committed
             async def update_var():
                 """Poll the database until the event shows up."""
-                _LOGGER.debug("Waiting for event to be written: %s", event)
                 while not self._is_event_in_db(event):
                     await asyncio.sleep(1)
-                _LOGGER.debug("Event was written: %s", event)
                 self.async_schedule_update_ha_state(True)
 
             self.hass.add_job(update_var)
