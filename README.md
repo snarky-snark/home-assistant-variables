@@ -1,10 +1,10 @@
 # home-assistant-variables
 
-The `var` component is a Home Assistant integration for declaring and 
-setting generic variable entities. Variables can be set manually using 
-the `var.set` service or they can be updated using templates or SQL 
-queries whenever any specified events fire. The `var` component depends 
-on the `recorder` component for up-to-date SQL queries and uses the 
+The `var` component is a Home Assistant integration for declaring and
+setting generic variable entities. Variables can be set manually using
+the `var.set` service or they can be updated using templates or SQL
+queries whenever any specified events fire. The `var` component depends
+on the `recorder` component for up-to-date SQL queries and uses the
 same database setting.
 
 ## Table of Contents
@@ -32,8 +32,11 @@ same database setting.
 ## Installation
 
 ### MANUAL INSTALLATION
-1. Download the [latest release](https://github.com/snarky-snark/home-assistant-variables/releases/latest).
-2. Unpack the release and copy the `custom_components/var` directory into the `custom_components` directory of your Home Assistant installation.
+1. Download the
+   [latest release](https://github.com/snarky-snark/home-assistant-variables/releases/latest).
+2. Unpack the release and copy the `custom_components/var` directory
+   into the `custom_components` directory of your Home Assistant
+   installation.
 3. Add a `var` entry to your `configuration.yaml`.
 4. Restart Home Assistant.
 
@@ -45,7 +48,9 @@ same database setting.
 
 ## Configuration
 
-To add a variable, include it under the `var` component in your `configuration.yaml`. The following example adds two variable entities, `x` and `y`:
+To add a variable, include it under the `var` component in your
+`configuration.yaml`. The following example adds two variable entities,
+`x` and `y`:
 ```yaml
 # Example configuration.yaml entry
 var:
@@ -68,7 +73,8 @@ var:
   Name to use in the frontend.
 * **friendly_name_template**
   *(template)(Optional)*
-  Defines a template for the name to be used in the frontend (this overrides `friendly_name`).
+  Defines a template for the name to be used in the frontend (this
+  overrides `friendly_name`).
 * **initial_value**
   *(match_all)(Optional)*
   Initial value when Home Assistant starts.
@@ -77,7 +83,9 @@ var:
   Defines a template for the value (this overrides `initial_value`).
 * **tracked_entity_id**
   *(string | list)(Optional)*
-  A list of entity IDs so the variable reacts to state changes of these entities. This can be used if the automatic analysis fails to find all relevant entities to monitor in the templates.
+  A list of entity IDs so the variable reacts to state changes of these
+  entities. This can be used if the automatic analysis fails to find all
+  relevant entities to monitor in the templates.
 * **tracked_event_type**
   *(string | list)(Optional)*
   A list of event types so the variable reacts to these events firing.
@@ -89,13 +97,17 @@ var:
   The SQL COLUMN to select from the result of the SQL QUERY.
 * **restore**
   *(boolean)(Optional)*
-  Restores the value of the variable whenever Home Assistant is restarted.
+  Restores the value of the variable whenever Home Assistant is
+  restarted.
 
   Default value:
   true
 * **unit_of_measurement**
   *(string)(Optional)*
-  Defines the units of measurement of the variable, if any. This will also influence the graphical presentation in the history visualization as a continuous value. Variables with missing `unit_of_measurement` are showing as discrete values.
+  Defines the units of measurement of the variable, if any. This will
+  also influence the graphical presentation in the history visualization
+  as a continuous value. Variables with missing `unit_of_measurement`
+  are showing as discrete values.
 
   Default value:
   None
@@ -104,18 +116,21 @@ var:
   Icon to display for the component.
 * **icon_template**
   *(template)(Optional)*
-  Defines a template for the icon to be used in the frontend (this overrides icon).
+  Defines a template for the icon to be used in the frontend (this
+  overrides icon).
 * **entity_picture**
   *(string)(Optional)*
   Icon to display for the component.
 * **entity_picture_template**
   *(template)(Optional)*
-  Defines a template for the `entity_picture` to be used in the frontend (this overrides `entity_picture`).
+  Defines a template for the `entity_picture` to be used in the frontend
+  (this overrides `entity_picture`).
 
 ## Services
 
 ### `set`
-The `set` service can be used to update any of the attributes of the variable entity from an automation or a script.
+The `set` service can be used to update any of the attributes of the
+variable entity from an automation or a script.
 
 ```yaml
 var:
@@ -153,7 +168,7 @@ automation:
 
 ### UPDATING USING TRACKED ENTITIES
 A variable can be set to update whenever the state of an entity changes.
-This example counts the number of times the state changes for 
+This example counts the number of times the state changes for
 `input_boolean.foo` and `input_boolean.bar`.
 ```yaml
 var:
@@ -179,12 +194,14 @@ var:
 
 ## Templates
 
-The `var` component shares features with the 
-[template sensor](https://www.home-assistant.io/components/template/). 
+The `var` component shares features with the
+[template sensor](https://www.home-assistant.io/components/template/).
 Many of a variable's attributes can be set using templates.
 
 ### SELECTING ENTITY/VALUE USING TEMPLATES
-Templates can be used with the variable `set` service to select the `entity_id` and to set any of the attributes of a variable entity. This example shows `entity_id` and `value` being selected via template.
+Templates can be used with the variable `set` service to select the
+`entity_id` and to set any of the attributes of a variable entity. This
+example shows `entity_id` and `value` being selected via template.
 ```yaml
 automation:
   - alias: "Handle Bottle Feed Event"
@@ -208,7 +225,10 @@ automation:
           {% endif %}
 ```
 ### DYNAMIC VARIABLE UPDATES USING TEMPLATES
-This example shows how the value, and other attributes of the variable, can be set to update automatically based on the state of another entity. Template values will be updated whenever the state changes for any of the tracked entities listed below `tracked_entity_id`.
+This example shows how the value, and other attributes of the variable,
+can be set to update automatically based on the state of another entity.
+Template values will be updated whenever the state changes for any of
+the tracked entities listed below `tracked_entity_id`.
 ```yaml
 var:
   waldo_location_status:
@@ -232,14 +252,18 @@ var:
 ```
 
 ## SQL Queries
-The `var` component also shares features with the 
-[SQL sensor](https://www.home-assistant.io/components/sql/). When a 
+The `var` component also shares features with the
+[SQL sensor](https://www.home-assistant.io/components/sql/). When a
 variable updates, it will run the SQL query against the Home Assistant
 database updating the variable with the value of the query.
 
 ### DYNAMIC VARIABLE UPDATES USING AN SQL QUERY
-This example shows how the value, and other attributes of the variable, can be set to update automatically based on an SQL query. Template values will be updated whenever the state changes for any of the tracked entities listed below `tracked_entity_id` or when any event fires with the same event type
-as any of the event types listed below `tracked_event_type`.
+This example shows how the value, and other attributes of the variable,
+can be set to update automatically based on an SQL query. Template
+values will be updated whenever the state changes for any of the tracked
+entities listed below `tracked_entity_id` or when any event fires with
+the same event type as any of the event types listed below
+`tracked_event_type`.
 ```yaml
 var:
   todays_diaper_count:
@@ -251,10 +275,10 @@ var:
 ```
 
 ### FILTERING EVENT DATA USING AN SQL QUERY
-This example shows how to use an SQL query to filter events based on 
-their `event_data`. In the example, `diaper_event` contains an 
-`event_data` entry called `type` that is either `wet`, `dirty`, or 
-`both`. 
+This example shows how to use an SQL query to filter events based on
+their `event_data`. In the example, `diaper_event` contains an
+`event_data` entry called `type` that is either `wet`, `dirty`, or
+`both`.
 ```yaml
 var:
   todays_wet_diaper_count:
@@ -266,10 +290,10 @@ var:
 ```
 
 ### USING AN SQL QUERY IN A TEMPLATE
-The result of a variable's SQL query can also be used within templates. 
+The result of a variable's SQL query can also be used within templates.
 This example computes the average formula volume over the past week and
-adds it to the variable `z`. In this example, `bottle_event` contains an 
-`event_data` entry called `volume` that contains the volume of formula. 
+adds it to the variable `z`. In this example, `bottle_event` contains an
+`event_data` entry called `volume` that contains the volume of formula.
 ```yaml
 var:
   avg_formula_plus_z:
@@ -294,8 +318,8 @@ cards:
       - entity: var.daily_bottle_feed_volume_formula
 ```
 
-Setting a `unit_of_measurement` will prompt Home Assistant to display
-a two dimensional graph in its history panel and `history-graph` card.
+Setting a `unit_of_measurement` will prompt Home Assistant to display a
+two dimensional graph in its history panel and `history-graph` card.
 ```yaml
 cards:
   - type: history-graph
@@ -306,17 +330,23 @@ cards:
       - entity: var.daily_bottle_feed_volume_formula
 ```
 
-Tip: Using a unit of `' '` can be useful if you want to group unit-less variables
-together in a single 2D graph.
+Tip: Using a unit of `' '` can be useful if you want to group unit-less
+variables together in a single 2D graph.
 
 ## Why?
 
 I assembled this component for a few reasons:
-* It was tedious to create a corresponding separate template sensor for each entity in the UI.
-* I wanted a single general-purpose component, with a generic name, that could be used to store, update, and display values using templates.
-* I didn't like using named UI components to store first-class data (e.g. `input_text`).
-* I wanted to be able to work with data directly from the home assistant database (especially custom events) without having to create and flip-flop between a bunch of different entities.
-* I wanted a custom component that I could extend with more features in the future.
+* It was tedious to create a corresponding separate template sensor for
+  each entity in the UI.
+* I wanted a single general-purpose component, with a generic name, that
+  could be used to store, update, and display values using templates.
+* I didn't like using named UI components to store first-class data
+  (e.g. `input_text`).
+* I wanted to be able to work with data directly from the home assistant
+  database (especially custom events) without having to create and
+  flip-flop between a bunch of different entities.
+* I wanted a custom component that I could extend with more features in
+  the future.
 
 ## Useful Links
 
