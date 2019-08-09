@@ -2,10 +2,10 @@
 
 The `var` component is a Home Assistant integration for declaring and
 setting generic variable entities. Variables can be set manually using
-the `var.set` service or they can be updated using templates or SQL
-queries whenever any specified events fire. The `var` component depends
-on the `recorder` component for up-to-date SQL queries and uses the
-same database setting.
+the `var.set` service or they can be set using templates or SQL queries
+which will be run automatically whenever a specified event fires. The
+`var` component depends on the `recorder` component for up-to-date SQL
+queries and uses the same database setting.
 
 ## Table of Contents
 * [Installation](#installation)
@@ -14,7 +14,7 @@ same database setting.
 * [Configuration](#configuration)
   + [Configuration Variables](#configuration-variables)
 * [Services](#services)
-  + [`set`](#-set-)
+  + [`var.set`](#varset)
 * [Automatic Updates](#automatic-updates)
   + [Updating Using Tracked Entities](#updating-using-tracked-entities)
   + [Updating Using Tracked Event Types](#updating-using-tracked-event-types)
@@ -26,7 +26,7 @@ same database setting.
   + [Filtering Event Data Using an SQL Query](#filtering-event-data-using-an-sql-query)
   + [Using an SQL Query in a Template](#using-an-sql-query-in-a-template)
 * [Lovelace UI](#lovelace-ui)
-* [Why?](#why-)
+* [Why?](#why)
 * [Useful Links](#useful-links)
 
 ## Installation
@@ -128,7 +128,7 @@ var:
 
 ## Services
 
-### `set`
+### `var.set`
 The `set` service can be used to update any of the attributes of the
 variable entity from an automation or a script.
 
