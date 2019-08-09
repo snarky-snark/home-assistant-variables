@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.4.0] - 2019-08-09
+### Added
+- `var.update` service used to force a variable to update from an
+  automation or script.
+
 ## [0.3.0] - 2019-08-09
 ### Added
 - More examples, detail, and table of contents to README
@@ -46,7 +51,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Variable updates occur when the state of any tracked entity changes.
 - README with initial documentation.
 
-[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.3.0...develop
+[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.4.0...develop
+[0.4.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.1.0...v0.2.0
