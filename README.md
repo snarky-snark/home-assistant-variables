@@ -15,6 +15,7 @@ queries and uses the same database setting.
   + [Configuration Variables](#configuration-variables)
 * [Services](#services)
   + [`var.set`](#varset)
+  + [`var.update`](#varupdate)
 * [Automatic Updates](#automatic-updates)
   + [Updating Using Tracked Entities](#updating-using-tracked-entities)
   + [Updating Using Tracked Event Types](#updating-using-tracked-event-types)
@@ -129,25 +130,23 @@ var:
 ## Services
 
 ### `var.set`
-The `set` service can be used to update any of the attributes of the
+The `set` service can be used to set the state or attributes of the
 variable entity from an automation or a script.
 
+This example sets up an automation that resets the values of the
+variables at midnight.
 ```yaml
 var:
   daily_diaper_count:
     friendly_name: "Daily Diaper Count"
     initial_value: 0
     icon: mdi:toilet
-  daily_bottle_feed_volume_milk:
-    friendly_name: "Daily Milk Intake"
-    initial_value: 0
-    unit_of_measurement: 'ounces'
-    icon: mdi:baby-bottle-outline
   daily_bottle_feed_volume_formula:
     friendly_name: "Daily Formula Intake"
     initial_value: 0
     unit_of_measurement: 'ounces'
     icon: mdi:baby-bottle-outline
+
 automation:
   - alias: "Reset Baby Counters"
     trigger:
@@ -158,10 +157,32 @@ automation:
         data:
           entity_id:
             - var.daily_diaper_count
-            - var.daily_bottle_feed_volume_milk
             - var.daily_bottle_feed_volume_formula
           value: 0
           icon: mdi:null
+```
+
+### `var.update`
+The `update` service can be used to force the variable entity to update
+from an automation or a script.
+
+This example sets up an automation that updates the variable every 5
+minutes.
+```yaml
+var:
+  temp_sensor_battery:
+    friendly_name: "Temp Sensor Battery"
+    value_template: "{{ state.attr('sensor.temperature', 'battery') }}"
+
+automation:
+  - alias: "Update Temp Sensor Battery Var Every 5 Minutes"
+    trigger:
+      - platform: time_pattern
+        minutes: '/5'
+    action:
+      - service: var.update
+        data:
+          entity_id: var.temp_sensor_battery
 ```
 
 ## Automatic Updates
