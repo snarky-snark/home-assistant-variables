@@ -1,10 +1,11 @@
 """Allows the creation of generic variable entities."""
 
 import logging
-
-import voluptuous as vol
+from typing import Union, Sequence
 import asyncio
 import json
+
+import voluptuous as vol
 
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
@@ -29,14 +30,25 @@ _LOGGER = logging.getLogger(__name__)
 DOMAIN = 'var'
 ENTITY_ID_FORMAT = DOMAIN + '.{}'
 
-CONF_INITIAL_VALUE = "initial_value"
-CONF_RESTORE = "restore"
+CONF_INITIAL_VALUE = 'initial_value'
+CONF_RESTORE = 'restore'
 CONF_QUERY = 'query'
 CONF_COLUMN = 'column'
 CONF_TRACKED_ENTITY_ID = 'tracked_entity_id'
 CONF_TRACKED_EVENT_TYPE = 'tracked_event_type'
 
 ATTR_VALUE = 'value'
+
+
+
+def validate_event_types(value: Union[str, Sequence]) -> Sequence[str]:
+    """Validate event types."""
+    if value is None:
+        raise vol.Invalid('Event types can not be None')
+    if isinstance(value, str):
+        value = [event_type.strip() for event_type in value.split(',')]
+
+    return [event_type for event_type in value]
 
 def validate_sql_select(value):
     """Validate that value is a SQL SELECT query."""
@@ -59,7 +71,7 @@ SERVICE_SET_SCHEMA = ENTITY_SERVICE_SCHEMA.extend({
         vol.Optional(ATTR_ENTITY_PICTURE): cv.string,
         vol.Optional(CONF_ENTITY_PICTURE_TEMPLATE): cv.template,
         vol.Optional(CONF_TRACKED_ENTITY_ID): cv.entity_ids,
-        vol.Optional(CONF_TRACKED_EVENT_TYPE): [cv.string],
+        vol.Optional(CONF_TRACKED_EVENT_TYPE): validate_event_types,
 })
 
 CONFIG_SCHEMA = vol.Schema({
@@ -78,7 +90,7 @@ CONFIG_SCHEMA = vol.Schema({
             vol.Optional(ATTR_ENTITY_PICTURE): cv.string,
             vol.Optional(CONF_ENTITY_PICTURE_TEMPLATE): cv.template,
             vol.Optional(CONF_TRACKED_ENTITY_ID): cv.entity_ids,
-            vol.Optional(CONF_TRACKED_EVENT_TYPE): [cv.string],
+            vol.Optional(CONF_TRACKED_EVENT_TYPE): validate_event_types,
         }, None)
     })
 }, extra=vol.ALLOW_EXTRA)
