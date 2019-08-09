@@ -96,7 +96,7 @@ CONFIG_SCHEMA = vol.Schema({
     })
 }, extra=vol.ALLOW_EXTRA)
 
-def parse_template_entity_ids(object_id, value_template,
+def parse_template_entity_ids(var_name, value_template,
                               icon_template, entity_picture_template,
                               friendly_name_template):
     """Parse entity_ids from templates."""
@@ -122,19 +122,13 @@ def parse_template_entity_ids(object_id, value_template,
 
     if invalid_templates:
         _LOGGER.warning(
-            'Variable %s has no entity ids configured to track nor'
-            ' were we able to extract the entities to track from the %s '
-            'template(s). This entity will only be able to be updated '
-            'manually.', object_id, ', '.join(invalid_templates))
+            'Variable %s: unable to extract the entities to track from '
+            'the %s template(s).', var_name, ', '.join(invalid_templates))
 
     if entity_ids is not None:
         entity_ids = list(entity_ids)
 
     return entity_ids
-
-def set_template_hass(template, hass):
-    if template is not None:
-        template.hass = hass
 
 async def async_setup(hass, config):
     """Set up variables from config."""
@@ -163,7 +157,8 @@ async def async_setup(hass, config):
            entity_picture_template,
            friendly_name_template,
         ):
-            set_template_hass(template, hass)
+            if template is not None:
+                template.hass = hass
 
         manual_entity_ids = cfg.get(CONF_TRACKED_ENTITY_ID)
 
@@ -381,10 +376,15 @@ class Variable(RestoreEntity):
             self._icon = icon
         if entity_picture is not None:
             self._entity_picture = entity_picture
-        for property_name, template in self._templates_dict.items():
+        templates_dict = {
+                '_value': value_template,
+                '_name': friendly_name_template,
+                '_icon': icon_template,
+                '_entity_picture': entity_picture_template}
+        for property_name, template in templates_dict.items():
             if template is not None:
+                template.hass = self.hass
                 setattr(self, property_name, template.async_render())
-                set_template_hass(template, self.hass)
         if query is not None:
           self._query = query
         if column is not None:
@@ -393,11 +393,6 @@ class Variable(RestoreEntity):
         tracked_entity_ids = None
         if manual_tracked_entity_ids is not None:
             tracked_entity_ids = manual_tracked_entity_ids
-        elif any(t is not None for t in self._templates_dict.values()):
-            template_entity_ids = parse_template_entity_ids(
-                object_id, *self._templates_dict.values())
-            if template_entity_ids is not None:
-                tracked_entity_ids = template_entity_ids
 
         if tracked_entity_ids is not None:
             if self._stop_track_state_change:
