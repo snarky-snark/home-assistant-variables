@@ -1,6 +1,11 @@
 # home-assistant-variables
 
-A custom Home Assistant component for declaring and setting generic variable entities dynamically.
+The `var` component is a Home Assistant integration for declaring and 
+setting generic variable entities. Variables can be set manually using 
+the `var.set` service or they can be updated using templates or SQL 
+queries whenever any specified events fire. The `var` component depends 
+on the `recorder` component for up-to-date SQL queries and uses the 
+same database setting.
 
 ## Installation
 
