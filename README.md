@@ -176,7 +176,7 @@ var:
     friendly_name: "Toggle Count"
     initial_value: 0
     value_template: "{{ (var.toggle_count | int) + 1 }}"
-    entity_id:
+    tracked_entity_id:
       - input_boolean.foo
       - input_boolean.bar
 ```
@@ -189,7 +189,7 @@ var:
   x:
     friendly_name: 'yz'
     value_template: "{{ (var.y | int) * ( var.z | int) }}"
-    event_type: my_custom_event
+    tracked_event_type: my_custom_event
 ```
 
 ## Templates
