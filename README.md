@@ -7,6 +7,28 @@ queries whenever any specified events fire. The `var` component depends
 on the `recorder` component for up-to-date SQL queries and uses the 
 same database setting.
 
+## Table of Contents
+* [Installation](#installation)
+  + [Manual Installation](#manual-installation)
+  + [Installation via HACS](#installation-via-hacs)
+* [Configuration](#configuration)
+  + [Configuration Variables](#configuration-variables)
+* [Services](#services)
+  + [`set`](#-set-)
+* [Automatic Updates](#automatic-updates)
+  + [Updating Using Tracked Entities](#updating-using-tracked-entities)
+  + [Updating Using Tracked Event Types](#updating-using-tracked-event-types)
+* [Templates](#templates)
+  + [Selecting Entity/Value Using Templates](#selecting-entity-value-using-templates)
+  + [Dynamic Variable Updates Using Templates](#dynamic-variable-updates-using-templates)
+* [SQL Queries](#sql-queries)
+  + [Dynamic Variable Updates Using an SQL Query](#dynamic-variable-updates-using-an-sql-query)
+  + [Filtering Event Data Using an SQL Query](#filtering-event-data-using-an-sql-query)
+  + [Using an SQL Query in a Template](#using-an-sql-query-in-a-template)
+* [Lovelace UI](#lovelace-ui)
+* [Why?](#why-)
+* [Useful Links](#useful-links)
+
 ## Installation
 
 ### MANUAL INSTALLATION
