@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - `var.update` service used to force a variable to update from an
   automation or script.
+### Fixed
+- Template processing was broken for `var.set` service. It is now fixed.
 
 ## [0.3.0] - 2019-08-09
 ### Added
