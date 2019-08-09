@@ -39,8 +39,6 @@ CONF_TRACKED_EVENT_TYPE = 'tracked_event_type'
 
 ATTR_VALUE = 'value'
 
-
-
 def validate_event_types(value: Union[str, Sequence]) -> Sequence[str]:
     """Validate event types."""
     if value is None:
@@ -73,6 +71,9 @@ SERVICE_SET_SCHEMA = ENTITY_SERVICE_SCHEMA.extend({
         vol.Optional(CONF_TRACKED_ENTITY_ID): cv.entity_ids,
         vol.Optional(CONF_TRACKED_EVENT_TYPE): validate_event_types,
 })
+
+SERVICE_UPDATE = "update"
+SERVICE_UPDATE_SCHEMA = ENTITY_SERVICE_SCHEMA
 
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
@@ -212,6 +213,11 @@ async def async_setup(hass, config):
     component.async_register_entity_service(
         SERVICE_SET, SERVICE_SET_SCHEMA,
         'async_set'
+    )
+
+    component.async_register_entity_service(
+        SERVICE_UPDATE, SERVICE_UPDATE_SCHEMA,
+        'async_update'
     )
 
     await component.async_add_entities(entities)
