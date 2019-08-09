@@ -196,7 +196,7 @@ var:
   toggle_count:
     friendly_name: "Toggle Count"
     initial_value: 0
-    value_template: "{{ (var.toggle_count | int) + 1 }}"
+    value_template: "{{ (states('var.toggle_count') | int) + 1 }}"
     tracked_entity_id:
       - input_boolean.foo
       - input_boolean.bar
@@ -209,7 +209,7 @@ multiplies variables `y` and `z` whenever `my_custom_event` fires.
 var:
   x:
     friendly_name: 'yz'
-    value_template: "{{ (var.y | int) * ( var.z | int) }}"
+    value_template: "{{ (states('var.y') | int) * ( states('var.z') | int) }}"
     tracked_event_type: my_custom_event
 ```
 
@@ -319,7 +319,7 @@ adds it to the variable `z`. In this example, `bottle_event` contains an
 var:
   avg_formula_plus_z:
     friendly_name: "Average Formula Plus z"
-    value_template: "{{ ( avg_formula | float) + ( var.z | float) }}"
+    value_template: "{{ ( avg_formula | float) + ( states('var.z') | float) }}"
     query: "SELECT COALESCE(SUM(CAST(JSON_EXTRACT(event_data, '$.volume') AS FLOAT))/7.0, 0) AS avg_formula FROM events WHERE event_type = 'bottle_event' AND time_fired BETWEEN DATETIME('now', 'start of day', '-7 days') AND DATETIME('now', 'start of day');"
     column: 'avg_formula'
     tracked_event_type: bottle_event
