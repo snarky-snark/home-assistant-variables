@@ -127,12 +127,39 @@ automation:
           icon: mdi:null
 ```
 
+## Automatic Updates
+
+### UPDATING USING TRACKED ENTITIES
+A variable can be set to update whenever the state of an entity changes.
+This example counts the number of times the state changes for 
+`input_boolean.foo` and `input_boolean.bar`.
+```yaml
+var:
+  toggle_count:
+    friendly_name: "Toggle Count"
+    initial_value: 0
+    value_template: "{{{ (var.toggle_count | int) + 1 }}}"
+    entity_id:
+      - input_boolean.foo
+      - input_boolean.bar
+```
+
+### UPDATING USING TRACKED EVENT TYPES
+A variable can be set to update whenever an event fires. This example
+multiplies variables `y` and `z` whenever `my_custom_event` fires.
+```yaml
+var:
+  x:
+    friendly_name: 'yz'
+    value_template: "{{{ (var.y | int) * ( var.z | int) }}}"
+    event_type: my_custom_event
+```
+
 ## Templates
 
-The `var` component is modeled after the template sensor and SQL sensor components,
-and many of the same features of these components are supported by the variable
-component. In fact, a variable is basically a template sensor and an SQL sensor
-with a service to set its state and attributes directly.
+The `var` component shares features with the 
+[template sensor](https://www.home-assistant.io/components/template/). 
+Many of a variable's attributes can be set using templates.
 
 ### SELECTING ENTITY/VALUE USING TEMPLATES
 Templates can be used with the variable `set` service to select the `entity_id` and to set any of the attributes of a variable entity. This example shows `entity_id` and `value` being selected via template.
@@ -182,6 +209,12 @@ var:
       - var.waldo_location_status
 ```
 
+## SQL Queries
+The `var` component also shares features with the 
+[SQL sensor](https://www.home-assistant.io/components/sql/). When a 
+variable updates, it will run the SQL query against the Home Assistant
+database updating the variable with the value of the query.
+
 ### DYNAMIC VARIABLE UPDATES USING AN SQL QUERY
 This example shows how the value, and other attributes of the variable, can be set to update automatically based on an SQL query. Template values will be updated whenever the state changes for any of the tracked entities listed below `tracked_entity_id` or when any event fires with the same event type
 as any of the event types listed below `tracked_event_type`.
@@ -189,12 +222,40 @@ as any of the event types listed below `tracked_event_type`.
 var:
   todays_diaper_count:
     friendly_name: "Today's Diaper Count"
-    unit_of_measurement: ' '
-    query: "select count(*) as diaper_count from events where event_type = 'diaper_event' and time_fired between datetime('now', 'start of day') and datetime('now');"
-    column: 'diaper_count'
     icon: mdi:toilet
-    tracked_event_type:
-      - diaper_event
+    query: "SELECT COUNT(*) AS diaper_count FROM events WHERE event_type = 'diaper_event' AND time_fired BETWEEN DATETIME('now', 'start of day') AND DATETIME('now');"
+    column: 'diaper_count'
+    tracked_event_type: diaper_event
+```
+
+### FILTERING EVENT DATA USING AN SQL QUERY
+This example shows how to use an SQL query to filter events based on 
+their `event_data`. In the example, `diaper_event` contains an 
+`event_data` entry called `type` that is either `wet`, `dirty`, or 
+`both`. 
+```yaml
+var:
+  todays_wet_diaper_count:
+    friendly_name: "Today's Wet Diaper Count"
+    icon: mdi:water
+    query: "SELECT COUNT(*) AS diaper_count FROM events WHERE event_type = 'diaper_event' AND JSON_EXTRACT(event_data, '$.type') LIKE '%wet%' AND time_fired BETWEEN DATETIME('now', 'start of day') AND DATETIME('now');"
+    column: 'diaper_count'
+    tracked_event_type: diaper_event
+```
+
+### USING AN SQL QUERY IN A TEMPLATE
+The result of a variable's SQL query can also be used within templates. 
+This example computes the average formula volume over the past week and
+adds it to the variable `z`. In this example, `bottle_event` contains an 
+`event_data` entry called `volume` that contains the volume of formula. 
+```yaml
+var:
+  avg_formula_plus_z:
+    friendly_name: "Average Formula Plus z"
+    value_template: "{{{ ( avg_formula | float) + ( var.z | float) }}}"
+    query: "SELECT COALESCE(SUM(CAST(JSON_EXTRACT(event_data, '$.volume') AS FLOAT))/7.0, 0) AS avg_formula FROM events WHERE event_type = 'bottle_event' AND time_fired BETWEEN DATETIME('now', 'start of day', '-7 days') AND DATETIME('now', 'start of day');"
+    column: 'avg_formula'
+    tracked_event_type: bottle_event
 ```
 
 ## Lovelace UI
