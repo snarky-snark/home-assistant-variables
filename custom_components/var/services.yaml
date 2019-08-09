@@ -38,3 +38,9 @@ set:
       example:  'local/pic.png'
     entity_picture_template:
       description: The new picture template for the variable entity. 
+update:
+  description: Force a variable to update its state and atttributes.
+  fields:
+    entity_id:
+      description: Entity id of the variable that will be updated.
+      example: var.x
