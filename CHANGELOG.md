@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.5.0] - 2019-08-09
+### Removed
+- Tracked entities are no longer parsed from templates automatically.
+  This was an undocumented feature that was confusing as implemented.
+
 ## [0.4.0] - 2019-08-09
 ### Added
 - `var.update` service used to force a variable to update from an
@@ -53,7 +58,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Variable updates occur when the state of any tracked entity changes.
 - README with initial documentation.
 
-[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.4.0...develop
+[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.5.0...develop
+[0.5.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.2.0...v0.2.1
