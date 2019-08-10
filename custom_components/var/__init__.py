@@ -212,7 +212,7 @@ async def async_setup(hass, config):
 
     component.async_register_entity_service(
         SERVICE_UPDATE, SERVICE_UPDATE_SCHEMA,
-        'async_update'
+        'async_force_update'
     )
 
     await component.async_add_entities(entities)
@@ -413,6 +413,9 @@ class Variable(RestoreEntity):
                 self._stop_track_events.append(stop)
 
         await self.async_update_ha_state()
+
+    async def async_force_update(self):
+        await self.async_update_ha_state(True)
 
     async def async_update(self):
         """Update the state and attributes from the templates."""
