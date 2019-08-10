@@ -96,40 +96,6 @@ CONFIG_SCHEMA = vol.Schema({
     })
 }, extra=vol.ALLOW_EXTRA)
 
-def parse_template_entity_ids(var_name, value_template,
-                              icon_template, entity_picture_template,
-                              friendly_name_template):
-    """Parse entity_ids from templates."""
-    entity_ids = set()
-    invalid_templates = []
-
-    for tpl_name, template in (
-       (CONF_VALUE_TEMPLATE, value_template),
-       (CONF_ICON_TEMPLATE, icon_template),
-       (CONF_ENTITY_PICTURE_TEMPLATE, entity_picture_template),
-       (CONF_FRIENDLY_NAME_TEMPLATE, friendly_name_template),
-    ):
-        if template is None:
-            continue
-
-        template_entity_ids = template.extract_entities()
-        if template_entity_ids == MATCH_ALL:
-            entity_ids = None
-            # Cut off _template from name
-            invalid_templates.append(tpl_name[:-9])
-        elif entity_ids is not None:
-            entity_ids |= set(template_entity_ids)
-
-    if invalid_templates:
-        _LOGGER.warning(
-            'Variable %s: unable to extract the entities to track from '
-            'the %s template(s).', var_name, ', '.join(invalid_templates))
-
-    if entity_ids is not None:
-        entity_ids = list(entity_ids)
-
-    return entity_ids
-
 async def async_setup(hass, config):
     """Set up variables from config."""
     component = EntityComponent(_LOGGER, DOMAIN, hass)
@@ -165,12 +131,6 @@ async def async_setup(hass, config):
         tracked_entity_ids = list()
         if manual_entity_ids is not None:
             tracked_entity_ids = list(set(manual_entity_ids))
-        else:
-            template_entity_ids = parse_template_entity_ids(
-                object_id, value_template, icon_template,
-                entity_picture_template, friendly_name_template)
-            if template_entity_ids is not None:
-                tracked_entity_ids = template_entity_ids
 
         tracked_event_types = cfg.get(CONF_TRACKED_EVENT_TYPE)
         if tracked_event_types is not None:
