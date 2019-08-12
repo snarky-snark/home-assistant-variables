@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.6.0] - 2019-08-11
+### Changed
+- An update is no longer triggered by default on Home Assistant startup.
+  To force a variable to update on startup, add `homeassistant_start` to
+  the variable's `tracked_event_type` list.
+
 ## [0.5.0] - 2019-08-09
 ### Removed
 - Tracked entities are no longer parsed from templates automatically.
