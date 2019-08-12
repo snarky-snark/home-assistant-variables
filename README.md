@@ -185,6 +185,8 @@ automation:
           entity_id: var.temp_sensor_battery
 ```
 
+Note: The `homeassistant.update_entity` service can be used more generally to update any entity, including `var` entities.
+
 ## Automatic Updates
 
 ### UPDATING USING TRACKED ENTITIES
