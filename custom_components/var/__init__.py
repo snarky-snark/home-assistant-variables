@@ -259,8 +259,6 @@ class Variable(RestoreEntity):
                     stop = self.hass.bus.async_listen(event_type, listener)
                     self._stop_track_events.append(stop)
 
-            self.async_schedule_update_ha_state(True)
-
         self.hass.bus.async_listen_once(
             EVENT_HOMEASSISTANT_START, variable_startup)
 
