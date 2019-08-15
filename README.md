@@ -7,7 +7,7 @@ which will be run automatically whenever a specified event fires. The
 `var` component depends on the `recorder` component for up-to-date SQL
 queries and uses the same database setting.
 
-<br><a href="https://www.buymeacoffee.com/snarkysnark" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
+<a href="https://www.buymeacoffee.com/snarkysnark" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
 
 ## Table of Contents
 * [Installation](#installation)
