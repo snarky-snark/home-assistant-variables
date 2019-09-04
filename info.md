@@ -9,25 +9,22 @@ queries and uses the same database setting.
 
 <a href="https://www.buymeacoffee.com/snarkysnark" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a><br>
 
-## Table of Contents
-* [Configuration](#configuration)
-  + [Configuration Variables](#configuration-variables)
-* [Services](#services)
-  + [`var.set`](#varset)
-  + [`var.update`](#varupdate)
-* [Automatic Updates](#automatic-updates)
-  + [Updating Using Tracked Entities](#updating-using-tracked-entities)
-  + [Updating Using Tracked Event Types](#updating-using-tracked-event-types)
-* [Templates](#templates)
-  + [Selecting Entity/Value Using Templates](#selecting-entity-value-using-templates)
-  + [Dynamic Variable Updates Using Templates](#dynamic-variable-updates-using-templates)
-* [SQL Queries](#sql-queries)
-  + [Dynamic Variable Updates Using an SQL Query](#dynamic-variable-updates-using-an-sql-query)
-  + [Filtering Event Data Using an SQL Query](#filtering-event-data-using-an-sql-query)
-  + [Using an SQL Query in a Template](#using-an-sql-query-in-a-template)
-* [Lovelace UI](#lovelace-ui)
-* [Why?](#why)
-* [Useful Links](#useful-links)
+## Installation
+
+### MANUAL INSTALLATION
+1. Download the
+   [latest release](https://github.com/snarky-snark/home-assistant-variables/releases/latest).
+2. Unpack the release and copy the `custom_components/var` directory
+   into the `custom_components` directory of your Home Assistant
+   installation.
+3. Add a `var` entry to your `configuration.yaml`.
+4. Restart Home Assistant.
+
+### INSTALLATION VIA HACS
+1. Ensure that [HACS](https://custom-components.github.io/hacs/) is installed.
+2. Search for and install the "Variable" integration.
+3. Add a `var` entry to your `configuration.yaml`.
+4. Restart Home Assistant.
 
 ## Configuration
 
@@ -58,12 +55,24 @@ var:
   *(template)(Optional)*
   Defines a template for the name to be used in the frontend (this
   overrides `friendly_name`).
+
+  Note: `friendly_name_template` is evaluated every time an update
+  is triggered for the variable (i.e., via `tracked_entity_id`, 
+  `tracked_event_type`, or `var.update`). To pass a template to
+  be evaluated once by `var.set`, use the `friendly_name`
+  parameter in a `data_template`.
 * **initial_value**
   *(match_all)(Optional)*
   Initial value when Home Assistant starts.
 * **value_template**
   *(template)(Optional)*
   Defines a template for the value (this overrides `initial_value`).
+
+  Note: `value_template` is evaluated every time an update
+  is triggered for the variable (i.e., via `tracked_entity_id`, 
+  `tracked_event_type`, or `var.update`). To pass a template to
+  be evaluated once by `var.set`, use the `value`
+  parameter in a `data_template`.
 * **tracked_entity_id**
   *(string | list)(Optional)*
   A list of entity IDs so the variable reacts to state changes of these
@@ -101,6 +110,12 @@ var:
   *(template)(Optional)*
   Defines a template for the icon to be used in the frontend (this
   overrides icon).
+
+  Note: `icon_template` is evaluated every time an update
+  is triggered for the variable (i.e., via `tracked_entity_id`, 
+  `tracked_event_type`, or `var.update`). To pass a template to
+  be evaluated once by `var.set`, use the `icon`
+  parameter in a `data_template`.
 * **entity_picture**
   *(string)(Optional)*
   Icon to display for the component.
@@ -109,12 +124,53 @@ var:
   Defines a template for the `entity_picture` to be used in the frontend
   (this overrides `entity_picture`).
 
+  Note: `entity_picture_template` is evaluated every time an update
+  is triggered for the variable (i.e., via `tracked_entity_id`, 
+  `tracked_event_type`, or `var.update`). To pass a template to
+  be evaluated once by `var.set`, use the `entity_picture`
+  parameter in a `data_template`.
+
 ## Services
 
 ### `var.set`
 The `set` service can be used to set the state or attributes of the
-variable entity from an automation or a script.
+variable entity from an automation or a script. All config
+parameters can also be set using `var.set`.
 
+#### PARAMETERS
+* **entity_id**
+  *(string | list)(Required)*
+  A list of `var` entity IDs to be set by the service.
+* **friendly_name**
+  *(string)(Optional)*
+* **friendly_name_template**
+  *(template)(Optional)*
+* **value**
+  *(match_all)(Optional)*
+* **value_template**
+  *(template)(Optional)*
+* **tracked_entity_id**
+  *(string | list)(Optional)*
+* **tracked_event_type**
+  *(string | list)(Optional)*
+* **query**
+  *(string)(Optional)*
+* **column**
+  *(string)(Optional)*
+* **restore**
+  *(boolean)(Optional)*
+* **unit_of_measurement**
+  *(string)(Optional)*
+* **icon**
+  *(string)(Optional)*
+* **icon_template**
+  *(template)(Optional)*
+* **entity_picture**
+  *(string)(Optional)*
+* **entity_picture_template**
+  *(template)(Optional)*
+
+#### EXAMPLE
 This example sets up an automation that resets the values of the
 variables at midnight.
 ```yaml
@@ -148,6 +204,12 @@ automation:
 The `update` service can be used to force the variable entity to update
 from an automation or a script.
 
+#### PARAMETERS
+* **entity_id**
+  *(string | list)(Required)*
+  A list of `var` entity IDs to be updated by the service.
+
+#### EXAMPLE
 This example sets up an automation that updates the variable every 5
 minutes.
 ```yaml
