@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 ### Added
 - Added more documentation on template parameters.
+- Added HACS manifest.
+### Removed
+- Removed obsolete HACS `info.md`.
 
 ## [0.7.0] - 2019-08-14
 ### Added
