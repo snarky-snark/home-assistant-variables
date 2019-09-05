@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added HACS manifest.
 ### Removed
 - Removed obsolete HACS `info.md`.
+### Fixed
+- Fixed a broken link in README table of contents.
 
 ## [0.7.0] - 2019-08-14
 ### Added
