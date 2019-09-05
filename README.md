@@ -26,7 +26,7 @@ queries and uses the same database setting.
   + [Updating Using Tracked Entities](#updating-using-tracked-entities)
   + [Updating Using Tracked Event Types](#updating-using-tracked-event-types)
 * [Templates](#templates)
-  + [Selecting Entity/Value Using Templates](#selecting-entity-value-using-templates)
+  + [Selecting Entity/Value Using Templates](#selecting-entityvalue-using-templates)
   + [Dynamic Variable Updates Using Templates](#dynamic-variable-updates-using-templates)
 * [SQL Queries](#sql-queries)
   + [Dynamic Variable Updates Using an SQL Query](#dynamic-variable-updates-using-an-sql-query)
