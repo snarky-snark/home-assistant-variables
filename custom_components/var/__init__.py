@@ -32,6 +32,7 @@ ENTITY_ID_FORMAT = DOMAIN + '.{}'
 
 CONF_INITIAL_VALUE = 'initial_value'
 CONF_RESTORE = 'restore'
+CONF_FORCE_UPDATE = 'force_update'
 CONF_QUERY = 'query'
 CONF_COLUMN = 'column'
 CONF_TRACKED_ENTITY_ID = 'tracked_entity_id'
@@ -62,6 +63,7 @@ SERVICE_SET_SCHEMA = ENTITY_SERVICE_SCHEMA.extend({
         vol.Optional(CONF_COLUMN): cv.string,
         vol.Optional(ATTR_UNIT_OF_MEASUREMENT): cv.string,
         vol.Optional(CONF_RESTORE): cv.boolean,
+        vol.Optional(CONF_FORCE_UPDATE): cv.boolean,
         vol.Optional(ATTR_FRIENDLY_NAME): cv.string,
         vol.Optional(CONF_FRIENDLY_NAME_TEMPLATE): cv.template,
         vol.Optional(CONF_ICON): cv.icon,
@@ -84,6 +86,7 @@ CONFIG_SCHEMA = vol.Schema({
             vol.Optional(CONF_COLUMN): cv.string,
             vol.Optional(ATTR_UNIT_OF_MEASUREMENT): cv.string,
             vol.Optional(CONF_RESTORE): cv.boolean,
+            vol.Optional(CONF_FORCE_UPDATE): cv.boolean,
             vol.Optional(ATTR_FRIENDLY_NAME): cv.string,
             vol.Optional(CONF_FRIENDLY_NAME_TEMPLATE): cv.template,
             vol.Optional(CONF_ICON): cv.icon,
@@ -110,6 +113,7 @@ async def async_setup(hass, config):
         initial_value = cfg.get(CONF_INITIAL_VALUE)
         unit = cfg.get(ATTR_UNIT_OF_MEASUREMENT)
         restore = cfg.get(CONF_RESTORE, True)
+        force_update = cfg.get(CONF_FORCE_UPDATE, False) 
         friendly_name = cfg.get(ATTR_FRIENDLY_NAME, object_id)
         icon = cfg.get(CONF_ICON)
         entity_picture = cfg.get(ATTR_ENTITY_PICTURE)
@@ -152,6 +156,7 @@ async def async_setup(hass, config):
                 column,
                 unit,
                 restore,
+                force_update,
                 friendly_name,
                 friendly_name_template,
                 icon,
@@ -182,7 +187,7 @@ class Variable(RestoreEntity):
     """Representation of a variable."""
 
     def __init__(self, hass, object_id, initial_value, value_template,
-                 session, query, column, unit, restore,
+                 session, query, column, unit, restore, force_update,
                  friendly_name, friendly_name_template, icon,
                  icon_template, entity_picture, entity_picture_template,
                  tracked_entity_ids, tracked_event_types):
@@ -200,6 +205,7 @@ class Variable(RestoreEntity):
         self._column = column
         self._unit = unit
         self._restore = restore
+        self._force_update = force_update
         self._friendly_name = friendly_name
         self._friendly_name_template = friendly_name_template
         self._icon = icon
@@ -273,6 +279,14 @@ class Variable(RestoreEntity):
     def should_poll(self):
         """If entity should be polled."""
         return False
+    
+    @property
+    def force_update(self):
+        """Return True if state updates should be forced.
+        If True, a state change will be triggered anytime the state property is
+        updated, not just when the value changes.
+        """
+        return self._force_update
 
     @property
     def name(self):
@@ -313,6 +327,7 @@ class Variable(RestoreEntity):
             column=None,
             unit=None,
             restore=None,
+            force_update=None,
             friendly_name=None,
             friendly_name_template=None,
             icon=None,
@@ -328,6 +343,8 @@ class Variable(RestoreEntity):
             self._unit = unit
         if restore is not None:
             self._restore = restore
+        if force_update is not None:
+            self._force_update = force_update
         if friendly_name is not None:
             self._friendly_name = friendly_name
         if icon is not None:
