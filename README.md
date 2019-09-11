@@ -121,6 +121,14 @@ var:
 
   Default value:
   true
+* **force_update**
+  *(boolean)(Optional)*
+  Trigger a state change event every time the value of the variable is
+  updated, even if the value hasn't changed. If false, state change
+  events will only be triggered by distinct changes in value.
+
+  Default value:
+  false
 * **unit_of_measurement**
   *(string)(Optional)*
   Defines the units of measurement of the variable, if any. This will
@@ -185,6 +193,8 @@ parameters can also be set using `var.set`.
 * **column**
   *(string)(Optional)*
 * **restore**
+  *(boolean)(Optional)*
+* **force_update**
   *(boolean)(Optional)*
 * **unit_of_measurement**
   *(string)(Optional)*
