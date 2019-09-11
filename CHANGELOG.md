@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Added more documentation on template parameters.
 - Added HACS manifest.
+- New `force_update` parameter to trigger variable state change
+  events when the variable state is updated but the value is unchanged.
 ### Removed
 - Removed obsolete HACS `info.md`.
 ### Fixed
