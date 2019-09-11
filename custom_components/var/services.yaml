@@ -25,6 +25,9 @@ set:
     restore:
       description: The new restore value for the variable entity. 
       example: false
+    force_update:
+      description: The new force_update value for the variable entity. 
+      example: true
     unit_of_measurement:
       description: The new unit of measurement for the variable entity. 
       example: 'ounces'
