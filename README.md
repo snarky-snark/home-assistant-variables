@@ -103,8 +103,7 @@ var:
 * **tracked_entity_id**
   *(string | list)(Optional)*
   A list of entity IDs so the variable reacts to state changes of these
-  entities. This can be used if the automatic analysis fails to find all
-  relevant entities to monitor in the templates.
+  entities.
 * **tracked_event_type**
   *(string | list)(Optional)*
   A list of event types so the variable reacts to these events firing.
