@@ -9,7 +9,7 @@ import voluptuous as vol
 
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
-from homeassistant.helpers.config_validation import ENTITY_SERVICE_SCHEMA
+from homeassistant.helpers.config_validation import make_entity_service_schema
 from homeassistant.const import (
     ATTR_FRIENDLY_NAME, ATTR_UNIT_OF_MEASUREMENT, CONF_VALUE_TEMPLATE,
     CONF_ICON, CONF_ICON_TEMPLATE, ATTR_ENTITY_PICTURE,
@@ -56,7 +56,7 @@ def validate_sql_select(value):
     return value
 
 SERVICE_SET = "set"
-SERVICE_SET_SCHEMA = ENTITY_SERVICE_SCHEMA.extend({
+SERVICE_SET_SCHEMA = make_entity_service_schema({
         vol.Optional(ATTR_VALUE): cv.match_all,
         vol.Optional(CONF_VALUE_TEMPLATE): cv.template,
         vol.Optional(CONF_QUERY): vol.All(cv.string, validate_sql_select),
@@ -75,7 +75,7 @@ SERVICE_SET_SCHEMA = ENTITY_SERVICE_SCHEMA.extend({
 })
 
 SERVICE_UPDATE = "update"
-SERVICE_UPDATE_SCHEMA = ENTITY_SERVICE_SCHEMA
+SERVICE_UPDATE_SCHEMA = make_entity_service_schema
 
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
