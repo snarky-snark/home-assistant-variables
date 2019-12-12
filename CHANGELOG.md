@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.9.2] - 2019-12-12
+### Fixed
+- Fix schema for `var.update` service (broken in 0.9.0).
+
 ## [0.9.1] - 2019-12-11
 ### Fixed
 - Changed minimum supported HA version in hacs.json to support HA 0.103.0. Due to a bug in HACS, this didn't work in v0.9.0.
@@ -89,7 +93,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Variable updates occur when the state of any tracked entity changes.
 - README with initial documentation.
 
-[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.9.1...develop
+[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.9.2...develop
+[0.9.2]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.7.0...v0.8.0
