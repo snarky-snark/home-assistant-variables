@@ -75,7 +75,7 @@ SERVICE_SET_SCHEMA = make_entity_service_schema({
 })
 
 SERVICE_UPDATE = "update"
-SERVICE_UPDATE_SCHEMA = make_entity_service_schema
+SERVICE_UPDATE_SCHEMA = make_entity_service_schema({})
 
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
