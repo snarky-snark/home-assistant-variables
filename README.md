@@ -133,7 +133,7 @@ var:
   Defines the units of measurement of the variable, if any. This will
   also influence the graphical presentation in the history visualization
   as a continuous value. Variables with missing `unit_of_measurement`
-  are showing as discrete values.
+  are shown as discrete values.
 
   Default value:
   None
@@ -152,7 +152,7 @@ var:
   parameter in a `data_template`.
 * **entity_picture**
   *(string)(Optional)*
-  Icon to display for the component.
+  Picture to display for the component.
 * **entity_picture_template**
   *(template)(Optional)*
   Defines a template for the `entity_picture` to be used in the frontend
