@@ -102,7 +102,6 @@ CONFIG_SCHEMA = vol.Schema({
 async def async_setup(hass, config):
     """Set up variables from config."""
     component = EntityComponent(_LOGGER, DOMAIN, hass)
-    await component.async_setup(config)
 
     entities = []
 
