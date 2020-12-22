@@ -32,6 +32,7 @@ queries and uses the same database setting.
   + [Dynamic Variable Updates Using an SQL Query](#dynamic-variable-updates-using-an-sql-query)
   + [Filtering Event Data Using an SQL Query](#filtering-event-data-using-an-sql-query)
   + [Using an SQL Query in a Template](#using-an-sql-query-in-a-template)
+* [Scenes](#scenes)
 * [Lovelace UI](#lovelace-ui)
 * [Why?](#why)
 * [Useful Links](#useful-links)
@@ -405,6 +406,16 @@ var:
     query: "SELECT COALESCE(SUM(CAST(JSON_EXTRACT(event_data, '$.volume') AS FLOAT))/7.0, 0) AS avg_formula FROM events WHERE event_type = 'bottle_event' AND time_fired BETWEEN DATETIME('now', 'start of day', '-7 days') AND DATETIME('now', 'start of day');"
     column: 'avg_formula'
     tracked_event_type: bottle_event
+```
+
+## SCENES
+
+You may set the values of variables with scenes:
+
+```yaml
+- name: My Scene
+  entities:
+    var.my_var: 'New Value'
 ```
 
 ## Lovelace UI
