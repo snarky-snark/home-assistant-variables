@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.12.0] - 2021-04-28
+### Added
+- Added `iot_class` entry to `manifest.json` to comply with latest HA requirements.
+
 ## [0.11.0] - 2021-03-05
 ### Added
 - Added `version` entry to `manifest.json` in conformance with latest HA requirements.
@@ -110,7 +114,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Variable updates occur when the state of any tracked entity changes.
 - README with initial documentation.
 
-[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.11.0...develop
+[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.12.0...develop
+[0.12.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.9.3...v0.10.0
 [0.9.3]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.9.2...v0.9.3
