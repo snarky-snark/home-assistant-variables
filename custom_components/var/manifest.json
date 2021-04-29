@@ -5,5 +5,6 @@
   "documentation": "https://github.com/snarky-snark/home-assistant-variables/blob/master/README.md",
   "dependencies": ["recorder"],
   "codeowners": ["@snarky-snark"],
-  "requirements": []
+  "requirements": [], 
+  "iot_class": "calculated"
 }
