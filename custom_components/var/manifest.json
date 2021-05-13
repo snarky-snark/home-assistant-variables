@@ -1,7 +1,7 @@
 {
   "domain": "var",
   "name": "Variable",
-  "version": "0.11.0",
+  "version": "0.13.0",
   "documentation": "https://github.com/snarky-snark/home-assistant-variables/blob/master/README.md",
   "dependencies": ["recorder"],
   "codeowners": ["@snarky-snark"],
