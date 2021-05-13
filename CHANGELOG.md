@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.12.3] - 2021-05-13
+### Fixed
+- Fixed stale version number in manifest that was stuck on v0.12.1.
+
 ## [0.12.2] - 2021-05-13
 ### Fixed
 - The minimum supported version of HA is actually 2021.5.1.
@@ -125,7 +129,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Variable updates occur when the state of any tracked entity changes.
 - README with initial documentation.
 
-[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.12.2...develop
+[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.12.3...develop
+[0.12.3]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.12.2...v0.12.3
 [0.12.2]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.12.1...v0.12.2
 [0.12.1]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.11.0...v0.12.0
