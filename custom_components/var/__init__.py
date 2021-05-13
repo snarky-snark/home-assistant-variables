@@ -406,9 +406,9 @@ class Variable(RestoreEntity):
                     self._state = None
                     return
 
-                for res in result:
-                    _LOGGER.debug("result = %s", res.items())
-                    db_value = res[self._column]
+                for row in result:
+                    _LOGGER.debug("result = %s", row._mapping.items())
+                    db_value = row._mapping[self._column]
             except sqlalchemy.exc.SQLAlchemyError as err:
                 _LOGGER.error("Error executing query %s: %s", self._query, err)
                 return
