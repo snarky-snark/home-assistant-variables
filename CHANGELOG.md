@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- The minimum supported version of HA is actually 2021.5.1.
+  That is the HA release where sqlalchemy was upgraded to 1.4.
 
 ## [0.12.1] - 2021-05-13
 ### Fixed
