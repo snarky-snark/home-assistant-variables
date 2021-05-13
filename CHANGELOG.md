@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.12.1] - 2021-05-13
+### Fixed
+- Fixed database calls to support HA's upgrade to sqlalchemy 1.4.
+  The minimum supported version of HA is now 2021.5.3.
+- Fixed stale version number in manifest that was stuck on v0.11.0.
+
 ## [0.12.0] - 2021-04-28
 ### Added
 - Added `iot_class` entry to `manifest.json` to comply with latest HA requirements.
@@ -114,7 +120,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Variable updates occur when the state of any tracked entity changes.
 - README with initial documentation.
 
-[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.12.0...develop
+[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.12.1...develop
+[0.12.1]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.12.0...v0.12.1
 [0.12.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.9.3...v0.10.0
