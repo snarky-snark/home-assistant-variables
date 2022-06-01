@@ -25,7 +25,7 @@ async def _async_reproduce_state(
     if cur_state.state == state.state:
         return
 
-    hass.states.async_set(state.entity_id, state.state)
+    hass.states.async_set(state.entity_id, state.state, state.attributes)
 
 
 async def async_reproduce_states(
