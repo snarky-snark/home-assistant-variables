@@ -34,6 +34,7 @@ queries and uses the same database setting.
   + [Using an SQL Query in a Template](#using-an-sql-query-in-a-template)
 * [Scenes](#scenes)
 * [Lovelace UI](#lovelace-ui)
+* [Reload](#reload)
 * [Why?](#why)
 * [Useful Links](#useful-links)
 
@@ -446,6 +447,20 @@ cards:
 
 Tip: Using a unit of `' '` can be useful if you want to group unit-less
 variables together in a single 2D graph.
+
+## Reload
+
+Variable configuration can be reloaded without restarting HA using the 
+YAML tab on the Developer Tools page. When the `var` component is loaded
+an option will be added to the `YAML configuration reloading` section 
+named `Variables`. Clicking this option will reload all `var` 
+configuration.
+
+Note: the component is only loaded by HA at startup when configuration 
+is defined for the component. This means that if the `var` component is
+installed and HA is restarted without `var` configuration the reload
+option is not available yet. You have to add some configuration first 
+and restart HA again before the reload option becomes available.
 
 ## Why?
 
