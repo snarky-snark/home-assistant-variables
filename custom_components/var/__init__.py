@@ -7,7 +7,7 @@ import json
 
 import voluptuous as vol
 
-from homeassistant.core import callback
+from homeassistant.core import callback, ServiceCall
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.config_validation import make_entity_service_schema
 from homeassistant.const import (
@@ -15,7 +15,8 @@ from homeassistant.const import (
     CONF_ICON, CONF_ICON_TEMPLATE, ATTR_ENTITY_PICTURE,
     CONF_ENTITY_PICTURE_TEMPLATE, ATTR_ENTITY_ID,
     EVENT_HOMEASSISTANT_START, CONF_FRIENDLY_NAME_TEMPLATE, MATCH_ALL,
-    EVENT_STATE_CHANGED)
+    EVENT_STATE_CHANGED,
+    SERVICE_RELOAD)
 from homeassistant.exceptions import TemplateError
 from homeassistant.helpers.entity import async_generate_entity_id
 from homeassistant.helpers.entity_component import EntityComponent
@@ -24,6 +25,7 @@ from homeassistant.helpers.event import async_track_state_change
 from homeassistant.helpers.json import JSONEncoder
 from homeassistant.components import recorder
 from homeassistant.components.recorder.models import Events
+from homeassistant.helpers.service import async_register_admin_service
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -103,6 +105,37 @@ async def async_setup(hass, config):
     """Set up variables from config."""
     component = EntityComponent(_LOGGER, DOMAIN, hass)
 
+    if not await _load_from_config(hass, config, component):
+        return False
+
+    component.async_register_entity_service(
+        SERVICE_SET, SERVICE_SET_SCHEMA,
+        'async_set'
+    )
+
+    component.async_register_entity_service(
+        SERVICE_UPDATE, SERVICE_UPDATE_SCHEMA,
+        'async_force_update'
+    )
+
+    # reload handling
+    async def reload_service_handler(service_call: ServiceCall) -> None:
+        """Reload yaml entities."""
+        conf = await component.async_prepare_reload()
+        if conf is None:
+            conf = {DOMAIN: {}}
+        await _load_from_config(hass, conf, component)
+
+    async_register_admin_service(
+        hass,
+        DOMAIN,
+        SERVICE_RELOAD,
+        reload_service_handler
+    )
+
+    return True
+
+async def _load_from_config(hass, config, component):
     entities = []
 
     for object_id, cfg in config[DOMAIN].items():
@@ -168,16 +201,6 @@ async def async_setup(hass, config):
 
     if not entities:
         return False
-
-    component.async_register_entity_service(
-        SERVICE_SET, SERVICE_SET_SCHEMA,
-        'async_set'
-    )
-
-    component.async_register_entity_service(
-        SERVICE_UPDATE, SERVICE_UPDATE_SCHEMA,
-        'async_force_update'
-    )
 
     await component.async_add_entities(entities)
     return True
@@ -273,6 +296,14 @@ class Variable(RestoreEntity):
             state = await self.async_get_last_state()
             if state:
                 self._value = state.state
+
+    async def async_will_remove_from_hass(self):
+        # Remove event listeners when the entity is removed from hass (for instance when 'reload' is triggered by user)
+        if self._stop_track_state_change:
+            self._stop_track_state_change()
+        if self._stop_track_events:
+            for stop in self._stop_track_events:
+                stop()
 
     @property
     def should_poll(self):
