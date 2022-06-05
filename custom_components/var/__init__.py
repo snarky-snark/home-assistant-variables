@@ -423,6 +423,9 @@ class Variable(RestoreEntity):
         await self.async_update_ha_state(True)
 
     async def async_update(self):
+        await self.hass.async_add_executor_job(Variable.update, self)
+
+    def update(self):
         """Update the state and attributes from the templates."""
 
         # Run the db query
