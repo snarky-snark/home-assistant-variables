@@ -408,6 +408,8 @@ class Variable(RestoreEntity):
                 template.hass = self.hass
                 setattr(self, property_name, template.async_render())
         if attributes is not None:
+            if not hasattr(self,'_attr_extra_state_attributes'):
+                setattr(self, '_attr_extra_state_attributes', {})
             for attr, template in attributes.items():
                 template.hass = self.hass
                 getattr(self, '_attr_extra_state_attributes')[attr] = template.async_render()
