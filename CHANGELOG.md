@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.14.0] - 2022-06-08
+### Added
+- Added support by for variable attributes. Thanks to [RoboMagus](https://github.com/RoboMagus)!
+
 ## [0.13.1] - 2022-06-05
 ### Fixed
 - Fixed broken database queries by moving database accesses off of the event thread. This addresses the [breaking change](https://github.com/home-assistant/core/pull/71547) introduced in Home Assistant 2022.04.
@@ -137,7 +141,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Variable updates occur when the state of any tracked entity changes.
 - README with initial documentation.
 
-[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.13.1...develop
+[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.14.0...develop
+[0.14.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.13.1...v0.14.0
 [0.13.1]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.12.3...v0.13.0
 [0.12.3]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.12.2...v0.12.3
