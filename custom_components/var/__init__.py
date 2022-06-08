@@ -285,24 +285,20 @@ class Variable(RestoreEntity):
     async def async_added_to_hass(self):
         """Register callbacks."""
 
-        @callback
-        def variable_startup(event):
-            """Update variable event listeners on startup."""
-            if self._tracked_entity_ids is not None:
-                listener = self._get_variable_event_listener()
-                stop = self.hass.bus.async_listen(EVENT_STATE_CHANGED, listener)
-                self._stop_track_state_change = stop
-            if self._tracked_event_types is not None:
-                listener = self._get_variable_event_listener()
-                for event_type in self._tracked_event_types:
-                    stop = self.hass.bus.async_listen(event_type, listener)
-                    self._stop_track_events.append(stop)
-
-        self.hass.bus.async_listen_once(
-            EVENT_HOMEASSISTANT_START, variable_startup)
-
-        # Restore previous value on startup
         await super().async_added_to_hass()
+
+        # Set variable event listeners when the entity is added to hass (for instance when 'reload' is triggered by user)
+        if self._tracked_entity_ids is not None:
+            listener = self._get_variable_event_listener()
+            stop = self.hass.bus.async_listen(EVENT_STATE_CHANGED, listener)
+            self._stop_track_state_change = stop
+        if self._tracked_event_types is not None:
+            listener = self._get_variable_event_listener()
+            for event_type in self._tracked_event_types:
+                stop = self.hass.bus.async_listen(event_type, listener)
+                self._stop_track_events.append(stop)
+
+        # Restore previous values on startup and reload
         if self._restore == True:
             state = await self.async_get_last_state()
             if state:
