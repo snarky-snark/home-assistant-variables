@@ -102,6 +102,11 @@ var:
   `tracked_event_type`, or `var.update`). To pass a template to
   be evaluated once by `var.set`, use the `value`
   parameter in a `data_template`.
+* **attributes**
+  *(map)(Optional)*
+  Dictionary of attributes equivalent to that of HomeAssistant [template sensor attributes](https://www.home-assistant.io/integrations/template/#attributes).
+
+  Similar to *value_template*, attributes are evaluated on every update.
 * **tracked_entity_id**
   *(string | list)(Optional)*
   A list of entity IDs so the variable reacts to state changes of these
@@ -185,6 +190,8 @@ parameters can also be set using `var.set`.
   *(match_all)(Optional)*
 * **value_template**
   *(template)(Optional)*
+* **attributes**
+  *(map)(Optional)*
 * **tracked_entity_id**
   *(string | list)(Optional)*
 * **tracked_event_type**
@@ -295,6 +302,9 @@ var:
     friendly_name: 'yz'
     value_template: "{{ (states('var.y') | int) * ( states('var.z') | int) }}"
     tracked_event_type: my_custom_event
+    attributes:
+      y: "{{ states('var.y') }}"
+      z: "{{ states('var.z') }}"
 ```
 
 ## Templates
@@ -328,6 +338,10 @@ automation:
           {% elif trigger.event.data.contents == 'formula' %}
             {{ (states('var.daily_bottle_feed_volume_formula') | int) + (trigger.event.data.volume | int) }}
           {% endif %}
+        attributes: >-
+          last_feed_volume: "{{ trigger.event.data.volume }}"
+
+
 ```
 ### DYNAMIC VARIABLE UPDATES USING TEMPLATES
 This example shows how the value, and other attributes of the variable,

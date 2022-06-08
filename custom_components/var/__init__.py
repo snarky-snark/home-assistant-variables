@@ -39,6 +39,7 @@ CONF_QUERY = 'query'
 CONF_COLUMN = 'column'
 CONF_TRACKED_ENTITY_ID = 'tracked_entity_id'
 CONF_TRACKED_EVENT_TYPE = 'tracked_event_type'
+CONF_ATTRIBUTES = 'attributes'
 
 ATTR_VALUE = 'value'
 
@@ -61,6 +62,7 @@ SERVICE_SET = "set"
 SERVICE_SET_SCHEMA = make_entity_service_schema({
         vol.Optional(ATTR_VALUE): cv.match_all,
         vol.Optional(CONF_VALUE_TEMPLATE): cv.template,
+        vol.Optional(CONF_ATTRIBUTES): vol.Schema({cv.string: cv.template}),
         vol.Optional(CONF_QUERY): vol.All(cv.string, validate_sql_select),
         vol.Optional(CONF_COLUMN): cv.string,
         vol.Optional(ATTR_UNIT_OF_MEASUREMENT): cv.string,
@@ -84,6 +86,7 @@ CONFIG_SCHEMA = vol.Schema({
         cv.slug: vol.Any({
             vol.Optional(CONF_INITIAL_VALUE): cv.match_all,
             vol.Optional(CONF_VALUE_TEMPLATE): cv.template,
+            vol.Optional(CONF_ATTRIBUTES): vol.Schema({cv.string: cv.template}),
             vol.Optional(CONF_QUERY): vol.All(cv.string, validate_sql_select),
             vol.Optional(CONF_COLUMN): cv.string,
             vol.Optional(ATTR_UNIT_OF_MEASUREMENT): cv.string,
@@ -151,6 +154,7 @@ async def _load_from_config(hass, config, component):
         entity_picture = cfg.get(ATTR_ENTITY_PICTURE)
 
         value_template = cfg.get(CONF_VALUE_TEMPLATE)
+        attribute_templates = cfg.get(CONF_ATTRIBUTES)
         friendly_name_template = cfg.get(CONF_FRIENDLY_NAME_TEMPLATE)
         icon_template = cfg.get(CONF_ICON_TEMPLATE)
         entity_picture_template = cfg.get(CONF_ENTITY_PICTURE_TEMPLATE)
@@ -161,6 +165,11 @@ async def _load_from_config(hass, config, component):
         ):
             if template is not None:
                 template.hass = hass
+
+        if attribute_templates:
+            for key in attribute_templates:
+                if attribute_templates[key] is not None:
+                    attribute_templates[key].hass = hass
 
         manual_entity_ids = cfg.get(CONF_TRACKED_ENTITY_ID)
 
@@ -183,6 +192,7 @@ async def _load_from_config(hass, config, component):
                 object_id,
                 initial_value,
                 value_template,
+                attribute_templates,
                 session,
                 query,
                 column,
@@ -208,7 +218,7 @@ async def _load_from_config(hass, config, component):
 class Variable(RestoreEntity):
     """Representation of a variable."""
 
-    def __init__(self, hass, object_id, initial_value, value_template,
+    def __init__(self, hass, object_id, initial_value, value_template, attribute_templates,
                  session, query, column, unit, restore, force_update,
                  friendly_name, friendly_name_template, icon,
                  icon_template, entity_picture, entity_picture_template,
@@ -219,6 +229,7 @@ class Variable(RestoreEntity):
         self._value = initial_value
         self._initial_value = initial_value
         self._value_template = value_template
+        self._attribute_templates = attribute_templates
         self._session = session
         if query is not None and not 'LIMIT' in query:
             self._query = query.replace(";", " LIMIT 1;")
@@ -296,6 +307,11 @@ class Variable(RestoreEntity):
             state = await self.async_get_last_state()
             if state:
                 self._value = state.state
+                if state.attributes and self._attribute_templates:
+                    if not hasattr(self,'_attr_extra_state_attributes'):
+                        setattr(self, '_attr_extra_state_attributes', {})
+                    for key, template in self._attribute_templates.items():
+                        self._attr_extra_state_attributes[key] = state.attributes.get(key)
 
     async def async_will_remove_from_hass(self):
         # Remove event listeners when the entity is removed from hass (for instance when 'reload' is triggered by user)
@@ -353,6 +369,7 @@ class Variable(RestoreEntity):
     async def async_set(self,
             value=None,
             value_template=None,
+            attributes=None,
             query=None,
             column=None,
             unit=None,
@@ -390,6 +407,12 @@ class Variable(RestoreEntity):
             if template is not None:
                 template.hass = self.hass
                 setattr(self, property_name, template.async_render())
+        if attributes is not None:
+            if not hasattr(self,'_attr_extra_state_attributes'):
+                setattr(self, '_attr_extra_state_attributes', {})
+            for attr, template in attributes.items():
+                template.hass = self.hass
+                getattr(self, '_attr_extra_state_attributes')[attr] = template.async_render()
         if query is not None:
           self._query = query
         if column is not None:
@@ -483,4 +506,29 @@ class Variable(RestoreEntity):
                 except AttributeError:
                     _LOGGER.error('Could not render %s template %s: %s',
                                   friendly_property_name, self._friendly_name, ex)
+        
+        # Update additional attributes:
+        if self._attribute_templates:
+            for attr, template in self._attribute_templates.items():
+                if template is None:
+                    continue
+
+                try:
+                    rendered_template = None
+                    if db_value is not None:
+                        rendered_template = template.async_render_with_possible_json_value(db_value, None)
+                    else:
+                        rendered_template = template.async_render()
+                        
+                    if rendered_template is not None:
+                        self._attr_extra_state_attributes[attr] = rendered_template
+                except TemplateError as ex:
+                    friendly_property_name = property_name[1:].replace('_', ' ')
+                    if ex.args and ex.args[0].startswith(
+                            "UndefinedError: 'None' has no attribute"):
+                        # Common during HA startup - so just a warning
+                        _LOGGER.warning('Could not render %s template %s,'
+                                        ' the state is unknown.',
+                                        friendly_property_name, self._friendly_name)
+                        continue
 

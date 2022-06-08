@@ -10,6 +10,11 @@ set:
     value_template:
       description: The new value template for the variable entity. 
       example: "{{ input_boolean.foo }}"
+    attributes:
+      description: Additional attributes to set for the variable entity.
+      example: |
+        attr1: 42
+        attr2: "{{ now() }}"
     tracked_entity_id:
       description: The new list of entities for the variable entity to track. 
       example: input_boolean.bar
