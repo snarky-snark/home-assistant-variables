@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.14.1] - 2022-06-08
+### Fixed
+- Fixed issue with tracked event listeners being dropped when var config reloads.
+
 ## [0.14.0] - 2022-06-08
 ### Added
 - Added support by for variable attributes. Thanks to [RoboMagus](https://github.com/RoboMagus)!
@@ -141,7 +145,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Variable updates occur when the state of any tracked entity changes.
 - README with initial documentation.
 
-[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.14.0...develop
+[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.14.1...develop
+[0.14.1]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.14.0...v0.14.1
 [0.14.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.13.1...v0.14.0
 [0.13.1]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.12.3...v0.13.0
