@@ -24,7 +24,11 @@ from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.event import async_track_state_change
 from homeassistant.helpers.json import JSONEncoder
 from homeassistant.components import recorder
-from homeassistant.components.recorder.models import Events
+try:
+  # Try new import, starting in HA 2022.7.0
+  from homeassistant.components.recorder.db_schema import Events
+except ImportError:
+  from homeassistant.components.recorder.models import Events
 from homeassistant.helpers.service import async_register_admin_service
 
 _LOGGER = logging.getLogger(__name__)
