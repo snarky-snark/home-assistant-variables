@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Fixed import to account for [refactoring in the recorder component](https://github.com/home-assistant/core/pull/72977/commits/2a3cc48f921d7c4d6b5772989dc9466f730024b6#diff-3081799db8a9325527d03012208ed66e8667d5d0f807bcd499424fabb99c32ff) in HA 2022.7.0.
 
 ## [0.14.1] - 2022-06-08
 ### Fixed
