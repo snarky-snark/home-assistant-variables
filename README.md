@@ -77,6 +77,9 @@ var:
 
 **var**
 *(map) (Required)*
+* **unique_id**
+  *(string)(Optional)*
+  Unique identifier for VAR entity, to enable overriding settings from within the UI, such as the entity name or room. Use with care, and only if explicitly required!
 * **friendly_name**
   *(string)(Optional)*
   Name to use in the frontend.
