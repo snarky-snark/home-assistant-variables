@@ -316,6 +316,7 @@ class Variable(RestoreEntity):
                         setattr(self, '_attr_extra_state_attributes', {})
                     for key, template in self._attribute_templates.items():
                         self._attr_extra_state_attributes[key] = state.attributes.get(key)
+                await self.async_update_ha_state(True)
 
     async def async_will_remove_from_hass(self):
         # Remove event listeners when the entity is removed from hass (for instance when 'reload' is triggered by user)
