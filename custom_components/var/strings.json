@@ -2,59 +2,77 @@
   "services":{
     "set":{
       "name":"Set",
+      "description":"Set attributes of a variable entity.",
       "fields":{
         "entity_id":{
-          "name":"Entity ID"
+          "name":"Entity ID",
+          "description":"Entity id of the variable whose value will be set."
         },
         "value":{
-          "name":"Value"
+          "name":"Value",
+          "description":"The new value for the variable entity."
         },
         "value_template":{
-          "name":"Value Template"
+          "name":"Value Template",
+          "description":"The new value template for the variable entity."
         },
         "attributes":{
-          "name":"Attributes"
+          "name":"Attributes",
+          "description":"Additional attributes to set for the variable entity."
         },
         "tracked_entity_id":{
-          "name":"Tracked Entity ID"
+          "name":"Tracked Entity ID",
+          "description":"The new list of entities for the variable entity to track."
         },
         "tracked_event_type":{
-          "name":"Tracked Event Type"
+          "name":"Tracked Event Type",
+          "description":"The new list of event types for the variable entity to track."
         },
         "query":{
-          "name":"Query"
+          "name":"Query",
+          "description":"An SQL QUERY string, should return 1 result at most."
         },
         "column":{
-          "name":"Column"
+          "name":"Column",
+          "description":"The SQL COLUMN to select from the result of the SQL QUERY."
         },
         "restore":{
-          "name":"Restore"
+          "name":"Restore",
+          "description":"The new restore value for the variable entity."
         },
         "force_update":{
-          "name":"Force Update"
+          "name":"Force Update",
+          "description":"The new force_update value for the variable entity."
         },
         "unit_of_measurement":{
-          "name":"Unit of Measurement"
+          "name":"Unit of Measurement",
+          "description":"The new unit of measurement for the variable entity."
         },
         "icon":{
-          "name":"Icon"
+          "name":"Icon",
+          "description":"The new icon for the variable entity."
         },
         "icon_template":{
-          "name":"Icon Template"
+          "name":"Icon Template",
+          "description":"The new icon template for the variable entity."
         },
         "entity_picture":{
-          "name":"Entity Picture"
+          "name":"Entity Picture",
+          "description":"The new picture for the variable entity."
         },
         "entity_picture_template":{
-          "name":"Entity Picture Template"
+          "name":"Entity Picture Template",
+          "description":"The new picture template for the variable entity."
         }
       }
     },
     "update":{
       "name":"Update",
+      "description":"Force a variable to update its state and attributes.",
       "fields":{
         "entity_id":{
-          "name":"Entity ID"
+          "name":"Entity ID",
+          "description":"Entity id of the variable that will be updated."
         }
       }
     }
