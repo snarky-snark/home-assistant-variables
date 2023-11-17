@@ -1,0 +1,62 @@
+{
+  "services":{
+    "set":{
+      "name":"Set",
+      "fields":{
+        "entity_id":{
+          "name":"Entity ID"
+        },
+        "value":{
+          "name":"Value"
+        },
+        "value_template":{
+          "name":"Value Template"
+        },
+        "attributes":{
+          "name":"Attributes"
+        },
+        "tracked_entity_id":{
+          "name":"Tracked Entity ID"
+        },
+        "tracked_event_type":{
+          "name":"Tracked Event Type"
+        },
+        "query":{
+          "name":"Query"
+        },
+        "column":{
+          "name":"Column"
+        },
+        "restore":{
+          "name":"Restore"
+        },
+        "force_update":{
+          "name":"Force Update"
+        },
+        "unit_of_measurement":{
+          "name":"Unit of Measurement"
+        },
+        "icon":{
+          "name":"Icon"
+        },
+        "icon_template":{
+          "name":"Icon Template"
+        },
+        "entity_picture":{
+          "name":"Entity Picture"
+        },
+        "entity_picture_template":{
+          "name":"Entity Picture Template"
+        }
+      }
+    },
+    "update":{
+      "name":"Update",
+      "fields":{
+        "entity_id":{
+          "name":"Entity ID"
+        }
+      }
+    }
+  }
+}
