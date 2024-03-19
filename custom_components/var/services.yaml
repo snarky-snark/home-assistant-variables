@@ -1,38 +1,74 @@
 set:
+  name: Set
+  description: Set an attribute or value of the variable.
   fields:
     entity_id:
+      name: Entity ID
+      description: The entity ID of the var entity to update.
       example: var.x
     value:
+      name: Value
+      description: The value to set on the variable.
       example: 13
     value_template:
+      name: Variable Template
+      description: The template to set, specifying the value of the variable.
       example: "{{ input_boolean.foo }}"
     attributes:
+      name: Attributes
+      description: A dict of attributes for the variable.
       example: |
         attr1: 42
         attr2: "{{ now() }}"
     tracked_entity_id:
+      name: Tracked Entity ID
+      description: A list of IDs of entities to track. When these entities update, the var will update.
       example: input_boolean.bar
     tracked_event_type:
+      name: Tracked Event Type
+      description: A list of event types to track. When these events fire, the var will update.
       example: sunset
     query:
+      name: Query
+      description: A query for the Home Assistant database. The result of the query is used as the value of the variable.
       example: "SELECT COUNT(*) AS todays_diaper_count FROM events WHERE event_type = 'diaper_event' AND time_fired BETWEEN DATETIME('now', 'start of day') and DATETIME('now');"
     column:
+      name: Column
+      description: The column to select from the Query results.
       example: 'todays_diaper_count'
     restore:
+      name: Restore
+      description: Flag specifying if the value of the variable should be restored on Home Assistant startup.
       example: false
     force_update:
+      name: Force Update
+      description: Flag specifying if variable should be updated even when value is unchanged.
       example: true
     unit_of_measurement:
+      name: Unit of Measurement
+      description: Unit of the value of the variable. Used in some UI components.
       example: 'ounces'
     icon:
+      name: Icon
+      description: Icon of the variable
       example: 'mdi:baby-bottle-outline'
     icon_template:
+      name: Icon Template
+      description: Template to use for the icon of the variable.
       example: "{{ input_text.foo }}"
     entity_picture:
+      name: Entity Picture
+      description: Picture to use for the var entity.
       example:  'local/pic.png'
     entity_picture_template:
+      name: Entity Picture Template
+      description: Template to use for picture of the variable. 
       example: "{{ input_text.foo }}"
 update:
+  name: Update
+  description: Force a variable to update using its current template.
   fields:
     entity_id:
+      name: Entity ID
+      description: The entity ID of the var entity to update.
       example: var.x
