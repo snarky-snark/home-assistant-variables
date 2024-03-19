@@ -30,6 +30,7 @@ set:
     entity_picture:
       example:  'local/pic.png'
     entity_picture_template:
+      example: "{{ input_text.foo }}"
 update:
   fields:
     entity_id:
