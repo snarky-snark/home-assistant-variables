@@ -445,7 +445,7 @@ class Variable(RestoreEntity):
                 stop = self.hass.bus.async_listen(event_type, listener)
                 self._stop_track_events.append(stop)
 
-        await self.async_update_ha_state(True)
+        await self.async_write_ha_state()
 
     async def async_force_update(self):
         await self.async_update_ha_state(True)
