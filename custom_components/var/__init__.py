@@ -21,7 +21,6 @@ from homeassistant.exceptions import TemplateError
 from homeassistant.helpers.entity import async_generate_entity_id
 from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.helpers.restore_state import RestoreEntity
-from homeassistant.helpers.event import async_track_state_change
 from homeassistant.helpers.json import JSONEncoder
 from homeassistant.components import recorder
 try:

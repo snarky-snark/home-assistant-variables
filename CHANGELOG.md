@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [0.15.6] - 2026-11-05
+### Fixed
+- Remove the unused `async_track_state_change` import to restore compatibility with Home Assistant 2026.11.0 (see #125 and #126).
+
 ## [0.15.5] - 2024-05-10
 ### Fixed
 - Fix really broken var.set (see #115).
@@ -174,7 +178,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Variable updates occur when the state of any tracked entity changes.
 - README with initial documentation.
 
-[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.15.5...develop
+[Unreleased]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.15.6...develop
+[0.15.6]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.15.5...v0.15.6
 [0.15.3]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.15.4...v0.15.5
 [0.15.3]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.15.3...v0.15.4
 [0.15.3]: https://github.com/snarky-snark/home-assistant-variables/compare/v0.15.2...v0.15.3
